@@ -50,7 +50,7 @@ class _TentangKamiScreenState extends State<TentangKamiScreen> {
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(18.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
                     Column(
