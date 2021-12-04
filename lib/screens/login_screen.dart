@@ -242,7 +242,7 @@ class _LoginPageState extends State<LoginPage> {
                                                   fontSize: 16),
                                               textAlign: TextAlign.right,
                                             ),
-                                            SizedBox(height: 40),
+                                            SizedBox(height: 25),
                                             Container(
                                               height: 50,
                                               decoration: BoxDecoration(
@@ -270,14 +270,51 @@ class _LoginPageState extends State<LoginPage> {
                                                       color: Colors.grey,
                                                       fontSize: 16),
                                                 ),
-                                                Text(
-                                                  "Daftar",
-                                                  style: TextStyle(
-                                                      color: Colors.blue,
-                                                      fontSize: 16),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pushNamed(context,
+                                                        'registration_screen');
+                                                  },
+                                                  style: TextButton.styleFrom(
+                                                    minimumSize: Size.zero,
+                                                    padding: EdgeInsets.zero,
+                                                    tapTargetSize:
+                                                        MaterialTapTargetSize
+                                                            .shrinkWrap,
+                                                  ),
+                                                  child: Text(
+                                                    'Daftar',
+                                                    style: TextStyle(
+                                                        color: Colors.blue),
+                                                  ),
                                                 ),
                                               ],
-                                            )
+                                            ),
+                                            SizedBox(height: 10),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pushNamed(context,
+                                                        'tentang_kami_screen');
+                                                  },
+                                                  style: TextButton.styleFrom(
+                                                    minimumSize: Size.zero,
+                                                    padding: EdgeInsets.zero,
+                                                    tapTargetSize:
+                                                        MaterialTapTargetSize
+                                                            .shrinkWrap,
+                                                  ),
+                                                  child: Text(
+                                                    'Tentang Kami',
+                                                    style: TextStyle(
+                                                        color: Colors.blue),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ],
                                         ),
                                       ),
