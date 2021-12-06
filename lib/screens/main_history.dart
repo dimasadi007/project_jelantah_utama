@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 // import 'package:jelantah/screens/historis_item_selesai.dart';
 import 'package:intl/intl.dart';
 // import 'package:jelantah/screens/login_page.dart';
@@ -11,7 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 
 import 'login_screen.dart';
-import 'main_history2.dart';
+import 'main_history2_old.dart';
 
 class Historis extends StatefulWidget {
   @override
@@ -45,48 +48,84 @@ class _HistorisState extends State<Historis> {
     "10",
   ];
 
+  late bool _hasMore;
+  late int _pageNumber;
+  late bool _error;
+  late bool _loading;
+  final int _defaultPhotosPerPageCount = 15;
+  //List<Photo> _photos;
+  final int _nextPageThreshold = 5;
+
+  var _token;
+
   getPref() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    setState(
-      () {},
-    );
+    _token = preferences.getString("token");
+    //setState(
+    //  () {},
+    //);
+  }
+
+  Future<void> fetchDataPickupOrder() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    _token = preferences.getString("token");
+    try {
+      Map bodi = {
+        "token": _token,
+        "status": ["pending", "process", "change_date"]
+      };
+      var body = jsonEncode(bodi);
+
+      print("bodyy: " + body);
+      final response = await http.post(
+          Uri.parse(
+              "http://10.0.2.2:8000/api/contributor/pickup_orders/get?page=$_pageNumber"),
+          body: body);
+      final data = jsonDecode(response.body);
+
+      String status = data['status'];
+      print("statusnnyaa: " + status);
+      //String datanya = data['data'];
+      //print("data: " + data);
+      //String pickup_order_no = data['data']['pickup_order_no'];
+      //print("pickup_order_no: " + pickup_order_no);
+
+      // final response = await http.get(
+      //     "https://jsonplaceholder.typicode.com/photos?_page=$_pageNumber");
+      // List<Photo> fetchedPhotos = Photo.parseList(json.decode(response.body));
+      // setState(() {
+      //   _hasMore = fetchedPhotos.length == _defaultPhotosPerPageCount;
+      //   _loading = false;
+      //   _pageNumber = _pageNumber + 1;
+      //   _photos.addAll(fetchedPhotos);
+      // });
+    } catch (e) {
+      print("catchhhhh");
+      setState(() {
+        _loading = false;
+        _error = true;
+      });
+    }
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getPref();
+    //getPref();
+    _hasMore = true;
+    _pageNumber = 1;
+    _error = false;
+    _loading = true;
+    //_photos = [];
+
+    print("statustttt ");
+
+    fetchDataPickupOrder();
+    print("statusqqqqooo");
   }
 
   int _selectedNavbar = 1;
-
-  DateTime selectedDate1 = DateTime.now();
-  DateTime selectedDate2 = DateTime.now();
-
-  Future<void> _selectDate1(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate1,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
-    if (picked != null && picked != selectedDate1)
-      setState(() {
-        selectedDate1 = picked;
-      });
-  }
-
-  Future<void> _selectDate2(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate2,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
-    if (picked != null && picked != selectedDate2)
-      setState(() {
-        selectedDate2 = picked;
-      });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,25 +187,27 @@ class _HistorisState extends State<Historis> {
                       child: Scrollbar(
                         showTrackOnHover: true,
                         isAlwaysShown: true,
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              for (var i = 0; i < orderid.length; i++)
-                                RC_Historis(
-                                  orderid: orderid[i],
-                                  alamat: alamat[i],
-                                  estimasi: estimasi[i],
-                                  status: status[i],
-                                  volume: volume[i],
-                                  color: Colors.blue,
-                                )
-                              // RC_Historis(orderid: '123-456-333', alamat: 'Jalan Cut Meutia No 1, Jakarta Barat, 11146', estimasi: 'Senin, 1 Agustus 2021', status: 'Selesai', volume: '10', color: Colors.blue,),
-                              // RC_Historis(orderid: '123-456-111', alamat: 'Jalan Cut Meutia No 1, Jakarta Barat, 11146', estimasi: 'Senin, 1 Agustus 2021', status: 'Batal', volume: '10', color: Colors.red,),
-                              // RC_Historis(orderid: '123-456-333', alamat: 'Jalan Cut Meutia No 1, Jakarta Barat, 11146', estimasi: 'Senin, 1 Agustus 2021', status: 'Selesai', volume: '10', color: Colors.blue,),
-                              // RC_Historis(orderid: '123-456-333', alamat: 'Jalan Cut Meutia No 1, Jakarta Barat, 11146', estimasi: 'Senin, 1 Agustus 2021', status: 'Selesai', volume: '10', color: Colors.blue,),
-                            ],
-                          ),
-                        ),
+                        child: ListView.builder(
+                            itemCount: 20,
+                            itemBuilder: (BuildContext context, index) {
+                              return Column(
+                                children: [
+                                  for (var i = 0; i < orderid.length; i++)
+                                    RC_Historis(
+                                      orderid: orderid[i],
+                                      alamat: alamat[i],
+                                      estimasi: estimasi[i],
+                                      status: status[i],
+                                      volume: volume[i],
+                                      color: Colors.blue,
+                                    )
+                                  // RC_Historis(orderid: '123-456-333', alamat: 'Jalan Cut Meutia No 1, Jakarta Barat, 11146', estimasi: 'Senin, 1 Agustus 2021', status: 'Selesai', volume: '10', color: Colors.blue,),
+                                  // RC_Historis(orderid: '123-456-111', alamat: 'Jalan Cut Meutia No 1, Jakarta Barat, 11146', estimasi: 'Senin, 1 Agustus 2021', status: 'Batal', volume: '10', color: Colors.red,),
+                                  // RC_Historis(orderid: '123-456-333', alamat: 'Jalan Cut Meutia No 1, Jakarta Barat, 11146', estimasi: 'Senin, 1 Agustus 2021', status: 'Selesai', volume: '10', color: Colors.blue,),
+                                  // RC_Historis(orderid: '123-456-333', alamat: 'Jalan Cut Meutia No 1, Jakarta Barat, 11146', estimasi: 'Senin, 1 Agustus 2021', status: 'Selesai', volume: '10', color: Colors.blue,),
+                                ],
+                              );
+                            }),
                       ),
                     )
                   ],

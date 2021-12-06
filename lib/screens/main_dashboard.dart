@@ -4,7 +4,7 @@ import 'package:decorated_icon/decorated_icon.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'history_item.dart';
-import 'main_history2.dart';
+import 'main_history2_old.dart';
 
 class MainDashboard extends StatefulWidget {
   @override

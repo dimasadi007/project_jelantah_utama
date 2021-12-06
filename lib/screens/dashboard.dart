@@ -9,7 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:project_jelantah_utama/screens/main_history.dart';
-import 'package:project_jelantah_utama/screens/main_history2.dart';
+import 'package:project_jelantah_utama/screens/main_history2_old.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:jelantah/screens/permintaan_penjemputan.dart';
 // import 'package:jelantah/screens/user_baru.dart';
@@ -59,33 +59,10 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  getDataDashboard2() async {
-    print("gggxaaa");
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    //_token = (preferences.getString('token') ?? '');
-    _token = preferences.getString("token");
-
-    print("_tokennya2" + _token);
-    Map bodi = {"token": _token};
-    var body = jsonEncode(bodi);
-    final response = await http.post(
-        Uri.parse("http://10.0.2.2:8000/api/contributor/user/"),
-        body: body);
-    final data = jsonDecode(response.body);
-
-    String status = data['status'];
-    String pesan = data['message'];
-    print("DashboardPesan" + pesan);
-    print("DashboardStatus" + status);
-  }
-
   getDataDashboard() async {
-    print("xxxaaa");
     SharedPreferences preferences = await SharedPreferences.getInstance();
     //_token = (preferences.getString('token') ?? '');
     _token = preferences.getString("token");
-    print("_tokennya" + _token);
-    print("ytytyaaa");
 
     Map bodi = {"token": _token};
     var body = jsonEncode(bodi);
@@ -107,7 +84,7 @@ class _DashboardState extends State<Dashboard> {
     final data = response.body;
     //decodedData = jsonDecode(data);
 
-    print("dataaa" + data);
+    //print("dataaa" + data);
 
     //String status = decodedData['status'];
     // String pesan = decodedData['message'];
@@ -132,7 +109,6 @@ class _DashboardState extends State<Dashboard> {
   }
 
   getPref() async {
-    print("xxxaaa");
     SharedPreferences preferences = await SharedPreferences.getInstance();
     _token = (preferences.getString('token') ?? '');
     _tokenSignout = preferences.getString('token');

@@ -68,9 +68,6 @@ class _LoginPageState extends State<LoginPage> {
         _loginStatus = LoginStatus.signIn;
         savePref(status, pesan, token);
       });
-      print("loginscreenPesan" + pesan);
-      print("loginscreenStatus" + status);
-      print("loginscreenToken" + token);
     } else {
       showAlertDialog(context);
       print("loginscreenPesan" + pesan);

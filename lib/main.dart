@@ -3,7 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:project_jelantah_utama/screens/login_screen.dart';
 import 'package:project_jelantah_utama/screens/login_screen2.dart';
 import 'package:project_jelantah_utama/screens/main_dashboard.dart';
-import 'package:project_jelantah_utama/screens/main_history2.dart';
+import 'package:project_jelantah_utama/screens/main_history2_old.dart';
 import 'package:project_jelantah_utama/screens/one_time_intro.dart';
 import 'package:project_jelantah_utama/screens/one_time_intro_v2.dart';
 import 'package:project_jelantah_utama/screens/registration_screen.dart';
