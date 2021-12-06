@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:project_jelantah_utama/screens/responsePickup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'dart:developer' as developer;
 // import 'package:jelantah/screens/historis_item_selesai.dart';
 import 'package:intl/intl.dart';
 // import 'package:jelantah/screens/login_page.dart';
@@ -69,43 +71,49 @@ class _HistorisState extends State<Historis> {
   Future<void> fetchDataPickupOrder() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     _token = preferences.getString("token");
-    try {
-      Map bodi = {
-        "token": _token,
-        "status": ["pending", "process", "change_date"]
-      };
-      var body = jsonEncode(bodi);
+    // try {
+    Map bodi = {
+      "token": _token,
+      "status": ["pending", "process", "change_date"]
+    };
+    var body = jsonEncode(bodi);
 
-      print("bodyy: " + body);
-      final response = await http.post(
-          Uri.parse(
-              "http://10.0.2.2:8000/api/contributor/pickup_orders/get?page=$_pageNumber"),
-          body: body);
-      final data = jsonDecode(response.body);
+    print("bodyy: " + body);
+    final response = await http.post(
+        Uri.parse(
+            "http://10.0.2.2:8000/api/contributor/pickup_orders/get?page=$_pageNumber"),
+        body: body);
+    //final _data = jsonDecode(response.body);
+    ResponsePickup _data = responsePickupFromJson(response.body);
+    //debugPrint("responseBody: " + response.body);
+    //debugPrint("jsondecode: " + response.body);
+    //developer.log(response.body);
+    String status = _data.status;
+    print("statusnnyaa: " + status);
+    //String datanya = data['message'];
+    //print("data: " + data);
+    int current_page = _data.pickupOrders.currentPage;
+    print("current_page: " + current_page.toString());
 
-      String status = data['status'];
-      print("statusnnyaa: " + status);
-      //String datanya = data['data'];
-      //print("data: " + data);
-      //String pickup_order_no = data['data']['pickup_order_no'];
-      //print("pickup_order_no: " + pickup_order_no);
+    String pno = _data.pickupOrders.data[0].pickupOrderNo;
+    print("data: " + pno);
 
-      // final response = await http.get(
-      //     "https://jsonplaceholder.typicode.com/photos?_page=$_pageNumber");
-      // List<Photo> fetchedPhotos = Photo.parseList(json.decode(response.body));
-      // setState(() {
-      //   _hasMore = fetchedPhotos.length == _defaultPhotosPerPageCount;
-      //   _loading = false;
-      //   _pageNumber = _pageNumber + 1;
-      //   _photos.addAll(fetchedPhotos);
-      // });
-    } catch (e) {
-      print("catchhhhh");
-      setState(() {
-        _loading = false;
-        _error = true;
-      });
-    }
+    // final response = await http.get(
+    //     "https://jsonplaceholder.typicode.com/photos?_page=$_pageNumber");
+    // List<Photo> fetchedPhotos = Photo.parseList(json.decode(response.body));
+    // setState(() {
+    //   _hasMore = fetchedPhotos.length == _defaultPhotosPerPageCount;
+    //   _loading = false;
+    //   _pageNumber = _pageNumber + 1;
+    //   _photos.addAll(fetchedPhotos);
+    // });
+    // } catch (e) {
+    //   print("catchhhhh");
+    //   setState(() {
+    //     _loading = false;
+    //     _error = true;
+    //   });
+    // }
   }
 
   @override
