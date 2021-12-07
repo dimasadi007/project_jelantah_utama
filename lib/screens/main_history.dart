@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:project_jelantah_utama/screens/responsePickup.dart';
+import 'package:project_jelantah_utama/models/responsePickup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
@@ -24,39 +24,46 @@ class Historis extends StatefulWidget {
 }
 
 class _HistorisState extends State<Historis> {
-  var orderid = ["123-456-789", "123-456-789", "123-456-789", "123-456-789"];
-  var alamat = [
-    "Jalan Cut Meutia No 1, Jakarta Barat, 11146",
-    "Jalan Cut Meutia No 1, Jakarta Barat, 11146",
-    "Jalan Cut Meutia No 1, Jakarta Barat, 11146",
-    "Jalan Cut Meutia No 1, Jakarta Barat, 11146",
-  ];
-  var estimasi = [
-    "Senin, 22 November 2021",
-    "Senin, 22 November 2021",
-    "Senin, 22 November 2021",
-    "Senin, 22 November 2021",
-  ];
-  var status = [
-    "Selesai",
-    "Batal",
-    "Proses",
-    "Dalam Perjalanan",
-  ];
-  var volume = [
-    "10",
-    "10",
-    "10",
-    "10",
-  ];
+  // var orderid = ["123-456-789", "123-456-789", "123-456-789", "123-456-789"];
+  // var alamat = [
+  //   "Jalan Cut Meutia No 1, Jakarta Barat, 11146",
+  //   "Jalan Cut Meutia No 1, Jakarta Barat, 11146",
+  //   "Jalan Cut Meutia No 1, Jakarta Barat, 11146",
+  //   "Jalan Cut Meutia No 1, Jakarta Barat, 11146",
+  // ];
+  // var estimasi = [
+  //   "Senin, 22 November 2021",
+  //   "Senin, 22 November 2021",
+  //   "Senin, 22 November 2021",
+  //   "Senin, 22 November 2021",
+  // ];
+  // var status = [
+  //   "Selesai",
+  //   "Batal",
+  //   "Proses",
+  //   "Dalam Perjalanan",
+  // ];
+  // var volume = [
+  //   "10",
+  //   "10",
+  //   "10",
+  //   "10",
+  // ];
+
+  var _orderid;
+  var _alamat;
+  var _estimasi;
+  var _status;
+  var _volume;
+  var _created_date;
 
   late bool _hasMore;
   late int _pageNumber;
   late bool _error;
   late bool _loading;
-  final int _defaultPhotosPerPageCount = 15;
-  //List<Photo> _photos;
-  final int _nextPageThreshold = 5;
+  final int _defaultPerPageCount = 15;
+  late List<Datum> _pickuporderno;
+  final int _nextPageThreshold = 0;
 
   var _token;
 
@@ -71,7 +78,7 @@ class _HistorisState extends State<Historis> {
   Future<void> fetchDataPickupOrder() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     _token = preferences.getString("token");
-    // try {
+    //try {
     Map bodi = {
       "token": _token,
       "status": ["pending", "process", "change_date"]
@@ -83,37 +90,59 @@ class _HistorisState extends State<Historis> {
         Uri.parse(
             "http://10.0.2.2:8000/api/contributor/pickup_orders/get?page=$_pageNumber"),
         body: body);
-    //final _data = jsonDecode(response.body);
     ResponsePickup _data = responsePickupFromJson(response.body);
-    //debugPrint("responseBody: " + response.body);
-    //debugPrint("jsondecode: " + response.body);
     //developer.log(response.body);
-    String status = _data.status;
-    print("statusnnyaa: " + status);
-    //String datanya = data['message'];
-    //print("data: " + data);
-    int current_page = _data.pickupOrders.currentPage;
-    print("current_page: " + current_page.toString());
+    String statusrespon = _data.status;
+    print("statusnnyaa: " + statusrespon);
+    // int current_page = _data.pickupOrders.currentPage;
+    // print("current_page: " + current_page.toString());
+    // String pno = _data.pickupOrders.data[0].pickupOrderNo;
+    // print("data: " + pno);
+    // print("length " + _data.pickupOrders.data.length.toString());
 
-    String pno = _data.pickupOrders.data[0].pickupOrderNo;
-    print("data: " + pno);
+    setState(() {
+      _hasMore = _data.pickupOrders.data.length == _defaultPerPageCount;
+      print("hasmoreee" + _hasMore.toString());
+      _loading = false;
+      _pageNumber = _pageNumber + 1;
+      print("pagenumber:" + _pageNumber.toString());
 
-    // final response = await http.get(
-    //     "https://jsonplaceholder.typicode.com/photos?_page=$_pageNumber");
-    // List<Photo> fetchedPhotos = Photo.parseList(json.decode(response.body));
-    // setState(() {
-    //   _hasMore = fetchedPhotos.length == _defaultPhotosPerPageCount;
-    //   _loading = false;
-    //   _pageNumber = _pageNumber + 1;
-    //   _photos.addAll(fetchedPhotos);
-    // });
+      for (int i = 0; i < _data.pickupOrders.data.length; i++) {
+        _orderid.add(_data.pickupOrders.data[i].pickupOrderNo.toString());
+        _alamat.add(_data.pickupOrders.data[i].address.toString());
+        var _GETestimasi = _data.pickupOrders.data[i].pickupDate;
+        if (_GETestimasi == null) {
+          _estimasi.add("-");
+        } else {
+          _estimasi.add(_GETestimasi);
+        }
+        _volume.add(_data.pickupOrders.data[i].estimateVolume.toString());
+        _status.add(_data.pickupOrders.data[i].status.toString());
+
+        String date = _data.pickupOrders.data[i].createdAt.toString();
+        var dateTime = DateTime.parse(date);
+        _created_date
+            .add(DateFormat('dd-MMMM-yyyy').format(dateTime).toString());
+      }
+      print("orderid: " + _orderid.toString());
+    });
+
+    print("orderid: " + _orderid.toString());
     // } catch (e) {
-    //   print("catchhhhh");
+    //   print("catch main history: " + e.toString());
     //   setState(() {
     //     _loading = false;
     //     _error = true;
     //   });
     // }
+    print("hasmore bwh: " + _hasMore.toString());
+    print("pagenumber bwh: " + _pageNumber.toString());
+    print("orderid: " + _orderid.toString());
+    print("alamat: " + _alamat.toString());
+    print("volume: " + _volume.toString());
+    print("status: " + _status.toString());
+    print("estimasi" + _estimasi.toString());
+    print("created_date: " + _created_date.toString());
   }
 
   @override
@@ -125,12 +154,14 @@ class _HistorisState extends State<Historis> {
     _pageNumber = 1;
     _error = false;
     _loading = true;
-    //_photos = [];
-
-    print("statustttt ");
+    _orderid = [];
+    _alamat = [];
+    _estimasi = [];
+    _status = [];
+    _volume = [];
+    _created_date = [];
 
     fetchDataPickupOrder();
-    print("statusqqqqooo");
   }
 
   int _selectedNavbar = 1;
@@ -192,31 +223,7 @@ class _HistorisState extends State<Historis> {
                       ),
                     ),
                     Expanded(
-                      child: Scrollbar(
-                        showTrackOnHover: true,
-                        isAlwaysShown: true,
-                        child: ListView.builder(
-                            itemCount: 20,
-                            itemBuilder: (BuildContext context, index) {
-                              return Column(
-                                children: [
-                                  for (var i = 0; i < orderid.length; i++)
-                                    RC_Historis(
-                                      orderid: orderid[i],
-                                      alamat: alamat[i],
-                                      estimasi: estimasi[i],
-                                      status: status[i],
-                                      volume: volume[i],
-                                      color: Colors.blue,
-                                    )
-                                  // RC_Historis(orderid: '123-456-333', alamat: 'Jalan Cut Meutia No 1, Jakarta Barat, 11146', estimasi: 'Senin, 1 Agustus 2021', status: 'Selesai', volume: '10', color: Colors.blue,),
-                                  // RC_Historis(orderid: '123-456-111', alamat: 'Jalan Cut Meutia No 1, Jakarta Barat, 11146', estimasi: 'Senin, 1 Agustus 2021', status: 'Batal', volume: '10', color: Colors.red,),
-                                  // RC_Historis(orderid: '123-456-333', alamat: 'Jalan Cut Meutia No 1, Jakarta Barat, 11146', estimasi: 'Senin, 1 Agustus 2021', status: 'Selesai', volume: '10', color: Colors.blue,),
-                                  // RC_Historis(orderid: '123-456-333', alamat: 'Jalan Cut Meutia No 1, Jakarta Barat, 11146', estimasi: 'Senin, 1 Agustus 2021', status: 'Selesai', volume: '10', color: Colors.blue,),
-                                ],
-                              );
-                            }),
-                      ),
+                      child: getBody(),
                     )
                   ],
                 ),
@@ -302,115 +309,138 @@ class _HistorisState extends State<Historis> {
       ),
     );
   }
-}
 
-class RC_Historis extends StatelessWidget {
-  RC_Historis(
-      {required this.orderid,
-      required this.alamat,
-      required this.estimasi,
-      required this.status,
-      required this.volume,
-      required this.color});
+  Widget getBody() {
+    if (_orderid.isEmpty) {
+      if (_loading) {
+        return Center(
+            child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: CircularProgressIndicator(),
+        ));
+      } else if (_error) {
+        return Center(
+            child: InkWell(
+          onTap: () {
+            setState(() {
+              _loading = true;
+              _error = false;
+              fetchDataPickupOrder();
+            });
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text("Error while loading photos, tap to try agin"),
+          ),
+        ));
+      }
+    } else {
+      return ListView.builder(
+          itemCount: _orderid.length + (_hasMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index == _orderid.length - _nextPageThreshold) {
+              fetchDataPickupOrder();
+            }
+            if (index == _orderid.length) {
+              if (_error) {
+                return Center(
+                    child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      _loading = true;
+                      _error = false;
+                      fetchDataPickupOrder();
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text("Error ketika loading, coba kembali..."),
+                  ),
+                ));
+              } else {
+                return Center(
+                    child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: CircularProgressIndicator(),
+                ));
+              }
+            }
+            //final Photo photo = _photos[index];
+            final orderid = _orderid[index];
+            final alamat = _alamat[index];
+            final estimasi = _estimasi[index];
+            final volume = _volume[index];
+            final status = _status[index];
+            final created_date = _created_date[index];
 
-  String orderid, alamat, estimasi, status, volume;
-  Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        // Navigator.of(context).push(
-        //     MaterialPageRoute(builder: (context) => Historis_Item_Selesai()));
-      },
-      child: Container(
-        margin: EdgeInsets.fromLTRB(30, 5, 30, 5),
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(10)),
-        child: Container(
-          margin: EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.only(
-                  top: 10,
-                  bottom: 10,
-                ),
+            // return Card(
+            //   child: Column(
+            //     children: <Widget>[
+            //       Image.network(
+            //         photo.thumbnailUrl,
+            //         fit: BoxFit.fitWidth,
+            //         width: double.infinity,
+            //         height: 160,
+            //       ),
+            //       Padding(
+            //         padding: const EdgeInsets.all(16),
+            //         child: Text(photo.title,
+            //             style: TextStyle(
+            //                 fontWeight: FontWeight.bold, fontSize: 16)),
+            //       ),
+            //     ],
+            //   ),
+            // );
+            return GestureDetector(
+              onTap: () {
+                // Navigator.of(context).push(
+                //     MaterialPageRoute(builder: (context) => Historis_Item_Selesai()));
+              },
+              child: Container(
+                margin: EdgeInsets.fromLTRB(30, 5, 30, 5),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(10.0)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'ID ' + orderid,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      '21 November 2021',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                'Alamat',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                alamat,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                'Estimasi Penjemputan',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                estimasi,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10)),
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.only(
+                          top: 10,
+                          bottom: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(10.0)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'ID ' + orderid,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              created_date,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       Text(
-                        'Total Volume',
+                        'Alamat',
                         style: TextStyle(
                           fontSize: 10,
                           color: Colors.grey,
@@ -418,89 +448,339 @@ class RC_Historis extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        volume + ' Liter',
+                        alamat,
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'Estimasi Penjemputan',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        estimasi,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Total Volume',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                volume + ' Liter',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (status == 'Selesai')
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                "Selesai",
+                                style: TextStyle(color: Colors.green),
+                              ),
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Color(0xffECF8ED),
+                                  ),
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ))),
+                            ),
+                          if (status == 'Batal')
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                "Batal",
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Color(0xffFBE8E8),
+                                  ),
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ))),
+                            ),
+                          if (status == 'Proses')
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                "Proses",
+                                style: TextStyle(color: Colors.blueAccent),
+                              ),
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Color(0xffE7EEF4),
+                                  ),
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ))),
+                            ),
+                          if (status == 'pending')
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                "Menunggu Konfirmasi",
+                                style: TextStyle(color: Colors.orange),
+                              ),
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Color(0xffFEF5E8),
+                                  ),
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ))),
+                            ),
+                        ],
+                      ),
                     ],
                   ),
-                  if (status == 'Selesai')
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        "Selesai",
-                        style: TextStyle(color: Colors.green),
-                      ),
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                            Color(0xffECF8ED),
-                          ),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ))),
-                    ),
-                  if (status == 'Batal')
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        "Batal",
-                        style: TextStyle(color: Colors.red),
-                      ),
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                            Color(0xffFBE8E8),
-                          ),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ))),
-                    ),
-                  if (status == 'Proses')
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        "Proses",
-                        style: TextStyle(color: Colors.blueAccent),
-                      ),
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                            Color(0xffE7EEF4),
-                          ),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ))),
-                    ),
-                  if (status == 'Dalam Perjalanan')
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        "Dalam Perjalanan",
-                        style: TextStyle(color: Colors.orange),
-                      ),
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                            Color(0xffFEF5E8),
-                          ),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ))),
-                    ),
-                ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
+            );
+          });
+    }
+    return Container();
   }
 }
+
+// class RC_Historis extends StatelessWidget {
+//   RC_Historis({
+//     required this.orderid,
+//     required this.alamat,
+//     required this.estimasi,
+//     required this.status,
+//     required this.volume,
+//     required this.color,
+//     required this.created_date,
+//   });
+//
+//   String orderid, alamat, estimasi, status, volume, created_date;
+//   Color color;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: () {
+//         // Navigator.of(context).push(
+//         //     MaterialPageRoute(builder: (context) => Historis_Item_Selesai()));
+//       },
+//       child: Container(
+//         margin: EdgeInsets.fromLTRB(30, 5, 30, 5),
+//         decoration: BoxDecoration(
+//             color: Colors.white, borderRadius: BorderRadius.circular(10)),
+//         child: Container(
+//           margin: EdgeInsets.all(10),
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               Container(
+//                 width: double.infinity,
+//                 padding: EdgeInsets.only(
+//                   top: 10,
+//                   bottom: 10,
+//                 ),
+//                 decoration: BoxDecoration(
+//                   color: Colors.white,
+//                   borderRadius:
+//                       BorderRadius.vertical(top: Radius.circular(10.0)),
+//                 ),
+//                 child: Row(
+//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                   children: [
+//                     Text(
+//                       'ID ' + orderid,
+//                       style: TextStyle(
+//                         fontSize: 15,
+//                         color: Colors.black,
+//                         fontWeight: FontWeight.bold,
+//                       ),
+//                     ),
+//                     Text(
+//                       created_date,
+//                       style: TextStyle(
+//                         fontSize: 12,
+//                         color: Colors.black,
+//                         fontWeight: FontWeight.bold,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//               Text(
+//                 'Alamat',
+//                 style: TextStyle(
+//                   fontSize: 10,
+//                   color: Colors.grey,
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//               Text(
+//                 alamat,
+//                 style: TextStyle(
+//                   fontSize: 12,
+//                   color: Colors.black,
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//               SizedBox(
+//                 height: 10,
+//               ),
+//               Text(
+//                 'Estimasi Penjemputan',
+//                 style: TextStyle(
+//                   fontSize: 10,
+//                   color: Colors.grey,
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//               Text(
+//                 estimasi,
+//                 style: TextStyle(
+//                   fontSize: 12,
+//                   color: Colors.black,
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//               SizedBox(
+//                 height: 10,
+//               ),
+//               Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                 children: [
+//                   Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       Text(
+//                         'Total Volume',
+//                         style: TextStyle(
+//                           fontSize: 10,
+//                           color: Colors.grey,
+//                           fontWeight: FontWeight.bold,
+//                         ),
+//                       ),
+//                       Text(
+//                         volume + ' Liter',
+//                         style: TextStyle(
+//                           fontSize: 12,
+//                           color: Colors.black,
+//                           fontWeight: FontWeight.bold,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                   if (status == 'Selesai')
+//                     TextButton(
+//                       onPressed: () {},
+//                       child: Text(
+//                         "Selesai",
+//                         style: TextStyle(color: Colors.green),
+//                       ),
+//                       style: ButtonStyle(
+//                           backgroundColor: MaterialStateProperty.all(
+//                             Color(0xffECF8ED),
+//                           ),
+//                           shape:
+//                               MaterialStateProperty.all<RoundedRectangleBorder>(
+//                                   RoundedRectangleBorder(
+//                             borderRadius: BorderRadius.circular(10.0),
+//                           ))),
+//                     ),
+//                   if (status == 'Batal')
+//                     TextButton(
+//                       onPressed: () {},
+//                       child: Text(
+//                         "Batal",
+//                         style: TextStyle(color: Colors.red),
+//                       ),
+//                       style: ButtonStyle(
+//                           backgroundColor: MaterialStateProperty.all(
+//                             Color(0xffFBE8E8),
+//                           ),
+//                           shape:
+//                               MaterialStateProperty.all<RoundedRectangleBorder>(
+//                                   RoundedRectangleBorder(
+//                             borderRadius: BorderRadius.circular(10.0),
+//                           ))),
+//                     ),
+//                   if (status == 'Proses')
+//                     TextButton(
+//                       onPressed: () {},
+//                       child: Text(
+//                         "Proses",
+//                         style: TextStyle(color: Colors.blueAccent),
+//                       ),
+//                       style: ButtonStyle(
+//                           backgroundColor: MaterialStateProperty.all(
+//                             Color(0xffE7EEF4),
+//                           ),
+//                           shape:
+//                               MaterialStateProperty.all<RoundedRectangleBorder>(
+//                                   RoundedRectangleBorder(
+//                             borderRadius: BorderRadius.circular(10.0),
+//                           ))),
+//                     ),
+//                   if (status == 'Dalam Perjalanan')
+//                     TextButton(
+//                       onPressed: () {},
+//                       child: Text(
+//                         "Dalam Perjalanan",
+//                         style: TextStyle(color: Colors.orange),
+//                       ),
+//                       style: ButtonStyle(
+//                           backgroundColor: MaterialStateProperty.all(
+//                             Color(0xffFEF5E8),
+//                           ),
+//                           shape:
+//                               MaterialStateProperty.all<RoundedRectangleBorder>(
+//                                   RoundedRectangleBorder(
+//                             borderRadius: BorderRadius.circular(10.0),
+//                           ))),
+//                     ),
+//                 ],
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
