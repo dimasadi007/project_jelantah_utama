@@ -121,8 +121,8 @@ class _HistorisState extends State<Historis> {
 
         String date = _data.pickupOrders.data[i].createdAt.toString();
         var dateTime = DateTime.parse(date);
-        _created_date
-            .add(DateFormat('dd-MMMM-yyyy').format(dateTime).toString());
+        _created_date.add(
+            DateFormat('dd MMMM yyyy', "id_ID").format(dateTime).toString());
       }
       print("orderid: " + _orderid.toString());
     });
@@ -186,6 +186,7 @@ class _HistorisState extends State<Historis> {
                 elevation: 0),
             body: Center(
               child: Container(
+                color: Color.fromRGBO(245, 245, 245, 1),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -330,7 +331,7 @@ class _HistorisState extends State<Historis> {
           },
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Text("Error while loading photos, tap to try agin"),
+            child: Text("Error while loading photos, tap to try again"),
           ),
         ));
       }
@@ -423,16 +424,16 @@ class _HistorisState extends State<Historis> {
                             Text(
                               'ID ' + orderid,
                               style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
+                                fontSize: 16,
+                                color: Color.fromRGBO(0, 43, 80, 1),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
                               created_date,
                               style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black,
+                                fontSize: 14,
+                                color: Color.fromRGBO(155, 199, 237, 1),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -442,8 +443,8 @@ class _HistorisState extends State<Historis> {
                       Text(
                         'Alamat',
                         style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
+                          fontSize: 14,
+                          color: Color.fromRGBO(155, 199, 237, 1),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -451,7 +452,7 @@ class _HistorisState extends State<Historis> {
                         alamat,
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.black,
+                          color: Color.fromRGBO(77, 107, 132, 1),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -461,8 +462,8 @@ class _HistorisState extends State<Historis> {
                       Text(
                         'Estimasi Penjemputan',
                         style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
+                          fontSize: 14,
+                          color: Color.fromRGBO(155, 199, 237, 1),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -470,7 +471,7 @@ class _HistorisState extends State<Historis> {
                         estimasi,
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.black,
+                          color: Color.fromRGBO(77, 107, 132, 1),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -486,8 +487,8 @@ class _HistorisState extends State<Historis> {
                               Text(
                                 'Total Volume',
                                 style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
+                                  fontSize: 14,
+                                  color: Color.fromRGBO(155, 199, 237, 1),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -495,7 +496,7 @@ class _HistorisState extends State<Historis> {
                                 volume + ' Liter',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors.black,
+                                  color: Color.fromRGBO(77, 107, 132, 1),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

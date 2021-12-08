@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:project_jelantah_utama/models/responseVideo.dart';
 import 'package:project_jelantah_utama/screens/main_history.dart';
 import 'package:project_jelantah_utama/screens/main_history2_old.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,7 +25,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:jelantah/screens/ubah_tutorial.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
+import 'jadwalkan_penjemputan.dart';
 import 'login_screen.dart';
 
 class Dashboard extends StatefulWidget {
@@ -37,21 +40,34 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  var url = [
-    "https://www.youtube.com/watch?v=LvUYbxlSGHw",
-    "https://www.youtube.com/watch?v=LvUYbxlSGHw",
-    "https://www.youtube.com/watch?v=LvUYbxlSGHw"
-  ];
-  var idyoutube = ["LvUYbxlSGHw", "LvUYbxlSGHw", "LvUYbxlSGHw"];
-  var judul = [
-    "Semua yang perlu kamu ketahui, Jelantah App",
-    "judul2",
-    "judul3"
-  ];
-  var deskripsi = ["youtube1", "youtube1", "youtube1"];
-  var tanggal = ["10 Oktober 2021", "10 Oktober 2021", "10 Oktober 2021"];
+  // var url = [
+  //   "https://www.youtube.com/watch?v=LvUYbxlSGHw",
+  //   "https://www.youtube.com/watch?v=LvUYbxlSGHw",
+  //   "https://www.youtube.com/watch?v=LvUYbxlSGHw"
+  // ];
+  //var idyoutube = ["LvUYbxlSGHw", "LvUYbxlSGHw", "LvUYbxlSGHw"];
+  // var judul = [
+  //   "Semua yang perlu kamu ketahui, Jelantah App",
+  //   "judul2",
+  //   "judul3"
+  // ];
+  //var deskripsi = ["youtube1", "youtube1", "youtube1"];
+  //var tanggal = ["10 Oktober 2021", "10 Oktober 2021", "10 Oktober 2021"];
   var decodedData;
   var _token, _nama, _tokenSignout;
+
+  var status, pesan;
+  var balance, price;
+  var userFirstname;
+
+  var url, judul, idyoutube, deskripsi, tanggal;
+
+  String getVideoID(String url) {
+    url = YoutubePlayer.convertUrlToId(url)!;
+    // = url.replaceAll("https://www.youtube.com/watch?v=", "");
+    //url = url.replaceAll("https://m.youtube.com/watch?v=", "");
+    return url;
+  }
 
   signOut(String tokenSignout) {
     setState(() {
@@ -66,33 +82,43 @@ class _DashboardState extends State<Dashboard> {
 
     Map bodi = {"token": _token};
     var body = jsonEncode(bodi);
+    Map bodiVideo = {"video_category_id": "1"};
+    var bodyVideo = jsonEncode(bodiVideo);
 
-    // final response = await http.get(
-    //     Uri.parse("http://10.0.2.2:8000/api/contributor/session/"),
-    //     body: body);
-    final queryParameters = {
-      'token': _token,
-    };
-    final uri =
-        Uri.http('10.0.2.2:8000', '/api/contributor/user/', queryParameters);
-    final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
+    final response = await http.post(
+        Uri.parse("http://10.0.2.2:8000/api/contributor/dashboard/get"),
+        body: body);
+    final data = jsonDecode(response.body);
+    final response2 = await http.post(
+        Uri.parse("http://10.0.2.2:8000/api/contributor/user/get"),
+        body: body);
+    final data2 = jsonDecode(response2.body);
 
-    //http.Response response = await http.get(uri);
-    final response = await http.get(uri, headers: headers);
+    final responseVideo = await http.post(
+        Uri.parse("http://10.0.2.2:8000/api/contributor/videos/get"),
+        body: bodyVideo);
+    ResponseVideo dataVideo = responseVideoFromJson(responseVideo.body);
 
-    //final data = jsonDecode(response.body);
-    final data = response.body;
-    //decodedData = jsonDecode(data);
+    setState(() {
+      status = data['status'];
+      pesan = data['message'];
+      balance = data['balance'].toString();
+      price = data['price'].toString();
+      userFirstname = data2['user']["first_name"].toString();
 
-    //print("dataaa" + data);
-
-    //String status = decodedData['status'];
-    // String pesan = decodedData['message'];
-    // String user = decodedData['user'];
-    //
-    // print("dashboardStatus" + status);
-    // print("dashboardpesan" + pesan);
-    // print("dashboarduser" + user);
+      for (int i = 0; i < dataVideo.videos.length; i++) {
+        url.add(dataVideo.videos[i].youtubeLink.toString());
+        judul.add(dataVideo.videos[i].name.toString());
+        deskripsi.add(dataVideo.videos[i].description.toString());
+        idyoutube.add(getVideoID(dataVideo.videos[i].youtubeLink.toString()));
+        String date = dataVideo.videos[i].updatedAt.toString();
+        var dateTime = DateTime.parse(date);
+        tanggal.add(
+            DateFormat('dd MMMM yyyy', "id_ID").format(dateTime).toString());
+      }
+      print(url);
+      print(idyoutube);
+    });
 
     // if (status == "success") {
     // SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -120,6 +146,11 @@ class _DashboardState extends State<Dashboard> {
     // TODO: implement initState
     super.initState();
     getPref();
+    url = [];
+    judul = [];
+    idyoutube = [];
+    deskripsi = [];
+    tanggal = [];
   }
 
   int _selectedNavbar = 0;
@@ -191,7 +222,7 @@ class _DashboardState extends State<Dashboard> {
                             textAlign: TextAlign.left,
                           ),
                           Text(
-                            "${_nama}",
+                            userFirstname.toString(),
                             style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 30,
@@ -236,47 +267,47 @@ class _DashboardState extends State<Dashboard> {
                     ],
                   ),
                 ),
-                Container(
-                  margin: EdgeInsets.fromLTRB(30, 5, 30, 5),
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Total Pengeluaran',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Rp. ',
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Color(0xFF2F9EFC),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            '4.000.000',
-                            style: TextStyle(
-                              fontSize: 25,
-                              color: Color(0xFF2F9EFC),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                // Container(
+                //   margin: EdgeInsets.fromLTRB(30, 5, 30, 5),
+                //   padding: EdgeInsets.all(10),
+                //   decoration: BoxDecoration(
+                //     color: Colors.white,
+                //     borderRadius: BorderRadius.circular(10),
+                //   ),
+                //   child: Column(
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //     crossAxisAlignment: CrossAxisAlignment.start,
+                //     children: [
+                //       Text(
+                //         'Saldo Saat Ini',
+                //         style: TextStyle(
+                //           fontSize: 15,
+                //           color: Colors.grey,
+                //         ),
+                //       ),
+                //       Row(
+                //         children: [
+                //           Text(
+                //             'Rp. ',
+                //             style: TextStyle(
+                //               fontSize: 15,
+                //               color: Color(0xFF2F9EFC),
+                //               fontWeight: FontWeight.bold,
+                //             ),
+                //           ),
+                //           Text(
+                //             balance.toString(),
+                //             style: TextStyle(
+                //               fontSize: 25,
+                //               color: Color(0xFF2F9EFC),
+                //               fontWeight: FontWeight.bold,
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //     ],
+                //   ),
+                // ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,7 +326,7 @@ class _DashboardState extends State<Dashboard> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Total Pasokan',
+                              'Saldo Saat Ini',
                               style: TextStyle(
                                 fontSize: 15,
                                 color: Colors.grey,
@@ -304,17 +335,17 @@ class _DashboardState extends State<Dashboard> {
                             Row(
                               children: [
                                 Text(
-                                  '100',
+                                  'Rp. ',
                                   style: TextStyle(
-                                    fontSize: 25,
+                                    fontSize: 15,
                                     color: Color(0xFF2F9EFC),
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
-                                  ' L',
+                                  balance.toString(),
                                   style: TextStyle(
-                                    fontSize: 15,
+                                    fontSize: 25,
                                     color: Color(0xFF2F9EFC),
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -355,7 +386,7 @@ class _DashboardState extends State<Dashboard> {
                                   ),
                                 ),
                                 Text(
-                                  '4.000',
+                                  price.toString(),
                                   style: TextStyle(
                                     fontSize: 25,
                                     color: Color(0xFF2F9EFC),
@@ -449,9 +480,9 @@ class _DashboardState extends State<Dashboard> {
                         children: [
                           RawMaterialButton(
                             onPressed: () {
-                              // Navigator.of(context).push(MaterialPageRoute(
-                              //     builder: (context) =>
-                              //         PermintaanPenjemputan()));
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) =>
+                                      JadwalkanPenjemputan()));
                             },
                             child: Icon(
                               Icons.arrow_forward,
@@ -476,13 +507,6 @@ class _DashboardState extends State<Dashboard> {
                           fontSize: 15,
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'Kelola Video',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.blue,
                         ),
                       ),
                     ],
