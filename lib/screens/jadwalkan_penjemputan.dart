@@ -7,6 +7,8 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'main_history.dart';
+
 class JadwalkanPenjemputan extends StatefulWidget {
   @override
   _JadwalkanPenjemputanState createState() => _JadwalkanPenjemputanState();
@@ -33,7 +35,8 @@ class _JadwalkanPenjemputanState extends State<JadwalkanPenjemputan> {
   bool _secureText = true;
 
   var _token, status, pesan, status2, pesan2;
-  var alamat,
+  var id_alamat,
+      alamat,
       kota,
       kode_pos,
       nama_penerima,
@@ -46,12 +49,53 @@ class _JadwalkanPenjemputanState extends State<JadwalkanPenjemputan> {
     });
   }
 
-  check() {
+  setPenjadwalanPenjemputan() {
     final form = _key.currentState;
     if (form!.validate()) {
       form.save();
-      //save();
+      send();
     }
+  }
+
+  send() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    //_token = (preferences.getString('token') ?? '');
+    _token = preferences.getString("token");
+    Map bodi = {
+      "token": _token,
+      "address_id": id_alamat[0],
+      "estimate_volume": volume_pasokan,
+    };
+
+    var body = jsonEncode(bodi);
+    final response = await http.post(
+        Uri.parse("http://10.0.2.2:8000/api/contributor/pickup_orders/post/"),
+        body: body);
+    final data = jsonDecode(response.body);
+
+    setState(() {
+      _loading = false;
+      status = data["status"].toString();
+    });
+    print("statusSend: " + status);
+    // print("nama_penerima: " + nama_penerima[0]);
+    // print("no_telepon_penerima: " + no_telepon_penerima[0]);
+    // print("kode_pos: " + kode_pos[0]);
+
+    // final response = await http.post(
+    //     Uri.parse("http://192.168.1.14:8099/flutter/register.php"),
+    //     headers: {"Access-Control-Allow-Origin": "*"},
+    //     body: {"nama": nama, "email": email, "password": password});
+    // final data = jsonDecode(response.body);
+    // int value = data['value'];
+    // String pesan = data['message'];
+    // if (status == "success") {
+    //   setState(() {
+    //     Navigator.pop(context);
+    //   });
+    // } else {
+    //   print(pesan);
+    // }
   }
 
   getAddress() async {
@@ -72,17 +116,19 @@ class _JadwalkanPenjemputanState extends State<JadwalkanPenjemputan> {
       _loading = false;
       status.add(data.status.toString());
       pesan.add(data.message.toString());
+      id_alamat.add(data.addresses[0].id.toString());
       alamat.add(data.addresses[0].address.toString());
       kota.add(data.addresses[0].cityId.toString());
       nama_penerima.add(data.addresses[0].recipientName.toString());
       no_telepon_penerima.add(data.addresses[0].phoneNumber.toString());
       kode_pos.add(data.addresses[0].postalCode.toString());
     });
-    print("address: " + alamat[0]);
-    print("kota: " + kota[0]);
-    print("nama_penerima: " + nama_penerima[0]);
-    print("no_telepon_penerima: " + no_telepon_penerima[0]);
-    print("kode_pos: " + kode_pos[0]);
+    // print("address: " + alamat[0]);
+    // print("kota: " + kota[0]);
+    // print("nama_penerima: " + nama_penerima[0]);
+    // print("no_telepon_penerima: " + no_telepon_penerima[0]);
+    // print("kode_pos: " + kode_pos[0]);
+
     // final response = await http.post(
     //     Uri.parse("http://192.168.1.14:8099/flutter/register.php"),
     //     headers: {"Access-Control-Allow-Origin": "*"},
@@ -105,6 +151,7 @@ class _JadwalkanPenjemputanState extends State<JadwalkanPenjemputan> {
     super.initState();
     getAddress();
     _loading = true;
+    id_alamat = [];
     status = [];
     pesan = [];
     alamat = [];
@@ -243,7 +290,7 @@ class _JadwalkanPenjemputanState extends State<JadwalkanPenjemputan> {
                   return "Masukan Alamat";
                 }
               },
-              onSaved: (e) => alamat = e!,
+              onSaved: (e) => alamat[0] = e!,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.grey[100],
@@ -256,7 +303,7 @@ class _JadwalkanPenjemputanState extends State<JadwalkanPenjemputan> {
               style: TextStyle(color: Color(0xff283c71)),
             ),
             TextFormField(
-              initialValue: "'kode_pos2'",
+              initialValue: kode_pos[0],
               enabled: false,
               keyboardType: TextInputType.number,
               inputFormatters: <TextInputFormatter>[
@@ -268,7 +315,7 @@ class _JadwalkanPenjemputanState extends State<JadwalkanPenjemputan> {
                   return "Masukan Kode Pos";
                 }
               },
-              onSaved: (e) => kode_pos = e!,
+              onSaved: (e) => kode_pos[0] = e!,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.grey[100],
@@ -281,7 +328,7 @@ class _JadwalkanPenjemputanState extends State<JadwalkanPenjemputan> {
               style: TextStyle(color: Color(0xff283c71)),
             ),
             TextFormField(
-              initialValue: "nama_penerima2",
+              initialValue: nama_penerima[0],
               enabled: false,
               style: TextStyle(color: Color(0xff283c71)),
               validator: (e) {
@@ -289,7 +336,7 @@ class _JadwalkanPenjemputanState extends State<JadwalkanPenjemputan> {
                   return "Masukan Nama Penerima";
                 }
               },
-              onSaved: (e) => nama_penerima = e!,
+              onSaved: (e) => nama_penerima[0] = e!,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.grey[100],
@@ -302,7 +349,7 @@ class _JadwalkanPenjemputanState extends State<JadwalkanPenjemputan> {
               style: TextStyle(color: Color(0xff283c71)),
             ),
             TextFormField(
-              initialValue: "no_telepon_penerima2",
+              initialValue: no_telepon_penerima[0],
               enabled: false,
               keyboardType: TextInputType.number,
               inputFormatters: <TextInputFormatter>[
@@ -314,7 +361,7 @@ class _JadwalkanPenjemputanState extends State<JadwalkanPenjemputan> {
                   return "Masukan No Telepon Penerima";
                 }
               },
-              onSaved: (e) => no_telepon_penerima = e!,
+              onSaved: (e) => no_telepon_penerima[0] = e!,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.grey[100],
@@ -352,7 +399,8 @@ class _JadwalkanPenjemputanState extends State<JadwalkanPenjemputan> {
               ),
               child: TextButton(
                   onPressed: () {
-                    //check();
+                    showAlertDialogPenjadwalanPenjemputan(context);
+                    ;
                   },
                   child: Text('Jadwalkan Penjemputan',
                       style: TextStyle(color: Colors.white))),
@@ -362,5 +410,49 @@ class _JadwalkanPenjemputanState extends State<JadwalkanPenjemputan> {
       );
     }
     return Container();
+  }
+
+  void showAlertDialogPenjadwalanPenjemputan(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Tidak"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Ya"),
+      onPressed: () {
+        setPenjadwalanPenjemputan();
+        Navigator.of(context).pop();
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (c, a1, a2) => Historis(),
+            transitionsBuilder: (c, anim, a2, child) =>
+                FadeTransition(opacity: anim, child: child),
+            transitionDuration: Duration(milliseconds: 300),
+          ),
+        );
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Jadwalkan Penjemputan"),
+      content: Text("Apakah anda yakin data-data sudah benar?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }
