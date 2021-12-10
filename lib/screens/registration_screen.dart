@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:project_jelantah_utama/models/responseUserCity.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -19,12 +21,15 @@ class _RegisterState extends State<Register> {
       nama_penerima,
       nomor_telepon_penerima;
   int price = 4000;
-  int city = 268;
+  late int id_city;
 
   final _key = new GlobalKey<FormState>();
   final TextEditingController _pass = TextEditingController();
   final TextEditingController _confirmPass = TextEditingController();
+  final _Controller = TextEditingController();
   var confirmPass;
+
+  var listcity;
 
   bool _secureText = true;
 
@@ -43,6 +48,7 @@ class _RegisterState extends State<Register> {
   }
 
   save() async {
+    id_city = id_city.toInt();
     Map bodi = {
       "first_name": nama_depan,
       "last_name": nama_belakang,
@@ -55,7 +61,7 @@ class _RegisterState extends State<Register> {
       "addresses": [
         {
           "address": alamat,
-          "city": city,
+          "city": id_city,
           "postal_code": kode_pos,
           "recipient_name": nama_penerima,
           "phone_number": nomor_telepon_penerima,
@@ -88,6 +94,12 @@ class _RegisterState extends State<Register> {
     } else {
       print(pesan);
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
@@ -280,6 +292,62 @@ class _RegisterState extends State<Register> {
                                     hintText: "Masukan Alamat",
                                   ),
                                 ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  'Kota',
+                                  style: TextStyle(color: Color(0xff283c71)),
+                                ),
+                                TypeAheadFormField<City?>(
+                                  //controller: _controller,
+                                  hideSuggestionsOnKeyboardHide: false,
+                                  textFieldConfiguration:
+                                      TextFieldConfiguration(
+                                    controller: _Controller,
+                                    decoration: InputDecoration(
+                                      // prefixIcon: Icon(Icons.search),
+                                      // border: OutlineInputBorder(),
+                                      hintText: 'Masukan Kota',
+                                    ),
+                                  ),
+                                  suggestionsCallback:
+                                      UserApi.getUserSuggestions,
+                                  itemBuilder: (context, City? suggestion) {
+                                    final city = suggestion!;
+
+                                    return ListTile(
+                                      title: Text(city.name),
+                                    );
+                                  },
+                                  noItemsFoundBuilder: (context) => Container(
+                                    height: 100,
+                                    child: Center(
+                                      child: Text(
+                                        'Kota tidak ditemukan.',
+                                        style: TextStyle(fontSize: 24),
+                                      ),
+                                    ),
+                                  ),
+                                  onSuggestionSelected: (City? suggestion) {
+                                    final city = suggestion!;
+                                    id_city = city.id;
+                                    //print("user:" + user.name.toString());
+                                    _Controller.text = city.name;
+                                    // ScaffoldMessenger.of(context)
+                                    //   ..removeCurrentSnackBar()
+                                    //   ..showSnackBar(SnackBar(
+                                    //     content: Text('Selected user: ${user.name}'),
+                                    //   ));
+                                  },
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'Please select a city';
+                                    }
+                                  },
+                                  onSaved: (value) =>
+                                      value = id_city.toString(),
+                                ),
                                 SizedBox(height: 10),
                                 Text(
                                   'Kode Pos',
@@ -418,5 +486,45 @@ class _RegisterState extends State<Register> {
         ),
       ),
     );
+  }
+}
+
+class UserApi {
+  static Future<List<City>> getUserSuggestions(String query) async {
+    Map bodi = {
+      "token": "",
+    };
+    var body = jsonEncode(bodi);
+    final response = await http.post(
+        Uri.parse("http://10.0.2.2:8000/api/contributor/cities/get/"),
+        body: body);
+    ResponseUserCity _data = responseUserCityFromJson(response.body);
+    //developer.log(response.body);
+    String statusrespon = _data.status;
+    print("statusnnyaa: " + statusrespon);
+    String cityrespon = _data.cities[0].name;
+    print("cityrespon: " + cityrespon);
+    List xx = _data.cities;
+
+    if (response.statusCode == 200) {
+      //final List users = json.decode(response.body);
+      ResponseUserCity _data = responseUserCityFromJson(response.body);
+      // print("cityy: " +
+      //     users
+      //         .map((json) => ResponseUserCity.fromJson(json))
+      //         .toList()
+      //         .toString());
+      return _data.cities.where((city) {
+        final nameLower = city.name.toLowerCase();
+        final queryLower = query.toLowerCase();
+
+        return nameLower.contains(queryLower);
+      }).toList();
+      return _data.cities;
+      //return _data.map((json) => City.fromJson(json)).toList();
+      //return xx;
+    } else {
+      throw Exception();
+    }
   }
 }

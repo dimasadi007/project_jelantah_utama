@@ -124,10 +124,10 @@ class _HistorisState extends State<Historis> {
         _created_date.add(
             DateFormat('dd MMMM yyyy', "id_ID").format(dateTime).toString());
       }
-      print("orderid: " + _orderid.toString());
+      // print("orderid: " + _orderid.toString());
     });
 
-    print("orderid: " + _orderid.toString());
+    // print("orderid: " + _orderid.toString());
     // } catch (e) {
     //   print("catch main history: " + e.toString());
     //   setState(() {
@@ -135,14 +135,14 @@ class _HistorisState extends State<Historis> {
     //     _error = true;
     //   });
     // }
-    print("hasmore bwh: " + _hasMore.toString());
-    print("pagenumber bwh: " + _pageNumber.toString());
-    print("orderid: " + _orderid.toString());
-    print("alamat: " + _alamat.toString());
-    print("volume: " + _volume.toString());
-    print("status: " + _status.toString());
-    print("estimasi" + _estimasi.toString());
-    print("created_date: " + _created_date.toString());
+    // print("hasmore bwh: " + _hasMore.toString());
+    // print("pagenumber bwh: " + _pageNumber.toString());
+    // print("orderid: " + _orderid.toString());
+    // print("alamat: " + _alamat.toString());
+    // print("volume: " + _volume.toString());
+    // print("status: " + _status.toString());
+    // print("estimasi" + _estimasi.toString());
+    // print("created_date: " + _created_date.toString());
   }
 
   @override
