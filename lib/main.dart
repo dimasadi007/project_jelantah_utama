@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         'one_time_intro2': (context) => OnBoardingPage(),
 
         'testcity': (context) => MyHomePage(
-              title: 'aaa',
+              title: 'Admin',
             ),
       },
       //home: SplashScreen(),

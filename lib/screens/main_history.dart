@@ -225,7 +225,36 @@ class _HistorisState extends State<Historis> {
                     ),
                     Expanded(
                       child: getBody(),
-                    )
+                    ),
+                    Container(
+                        padding: EdgeInsets.symmetric(vertical: 2.0),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              // First child is enter comment text input
+                              Expanded(
+                                child: TextFormField(
+                                  autocorrect: false,
+                                  decoration: new InputDecoration(
+                                    labelText: "Some Text",
+                                    labelStyle: TextStyle(
+                                        fontSize: 20.0, color: Colors.white),
+                                    fillColor: Colors.blue,
+                                    border: OutlineInputBorder(
+                                        // borderRadius:
+                                        //     BorderRadius.all(Radius.zero(5.0)),
+                                        borderSide: BorderSide(
+                                            color: Colors.purpleAccent)),
+                                  ),
+                                ),
+                              ),
+                              // Second child is button
+                              IconButton(
+                                icon: Icon(Icons.send),
+                                iconSize: 20.0,
+                                onPressed: () {},
+                              )
+                            ])),
                   ],
                 ),
               ),
