@@ -269,8 +269,8 @@ class _LoginPageState extends State<LoginPage> {
                                                 ),
                                                 TextButton(
                                                   onPressed: () {
-                                                    Navigator.pushNamed(
-                                                        context, 'testcity');
+                                                    Navigator.pushNamed(context,
+                                                        'registration_screen');
                                                   },
                                                   style: TextButton.styleFrom(
                                                     minimumSize: Size.zero,

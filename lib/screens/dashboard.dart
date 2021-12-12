@@ -27,6 +27,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
+import 'chat_admin.dart';
 import 'jadwalkan_penjemputan.dart';
 import 'login_screen.dart';
 
@@ -589,8 +590,7 @@ class _DashboardState extends State<Dashboard> {
                   Navigator.push(
                     context,
                     PageRouteBuilder(
-                      pageBuilder: (c, a1, a2) => //ChatList(),
-                          MainHistory(),
+                      pageBuilder: (c, a1, a2) => ChatAdmin(),
                       transitionsBuilder: (c, anim, a2, child) =>
                           FadeTransition(opacity: anim, child: child),
                       transitionDuration: Duration(milliseconds: 300),

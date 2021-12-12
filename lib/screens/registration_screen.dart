@@ -39,7 +39,7 @@ class _RegisterState extends State<Register> {
     });
   }
 
-  check() {
+  checkAndSave() {
     final form = _key.currentState;
     if (form!.validate()) {
       form.save();
@@ -419,7 +419,7 @@ class _RegisterState extends State<Register> {
                                   ),
                                   child: TextButton(
                                       onPressed: () {
-                                        check();
+                                        checkAndSave();
                                       },
                                       child: Text('Daftar',
                                           style:

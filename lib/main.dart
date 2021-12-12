@@ -9,7 +9,7 @@ import 'package:project_jelantah_utama/screens/one_time_intro_v2.dart';
 import 'package:project_jelantah_utama/screens/registration_screen.dart';
 import 'package:project_jelantah_utama/screens/registration_screen2.dart';
 import 'package:project_jelantah_utama/screens/tentang_kami_screen.dart';
-import 'package:project_jelantah_utama/screens/testcity.dart';
+import 'package:project_jelantah_utama/screens/chat_admin.dart';
 import 'package:project_jelantah_utama/screens/welcome_screen.dart';
 import 'screens/splash_screen.dart';
 import 'package:flutter/services.dart';
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
         'one_time_intro': (context) => CarouselWithIndicatorDemo(),
         'one_time_intro2': (context) => OnBoardingPage(),
 
-        'testcity': (context) => MyHomePage(
+        'chat_admin': (context) => ChatAdminPage(
               title: 'Admin',
             ),
       },

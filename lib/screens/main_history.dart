@@ -14,7 +14,7 @@ import 'package:intl/intl.dart';
 // import 'package:jelantah/screens/chat_list.dart';
 // import 'package:jelantah/screens/tutorial.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-
+import 'chat_admin.dart';
 import 'login_screen.dart';
 import 'main_history2_old.dart';
 
@@ -24,32 +24,6 @@ class Historis extends StatefulWidget {
 }
 
 class _HistorisState extends State<Historis> {
-  // var orderid = ["123-456-789", "123-456-789", "123-456-789", "123-456-789"];
-  // var alamat = [
-  //   "Jalan Cut Meutia No 1, Jakarta Barat, 11146",
-  //   "Jalan Cut Meutia No 1, Jakarta Barat, 11146",
-  //   "Jalan Cut Meutia No 1, Jakarta Barat, 11146",
-  //   "Jalan Cut Meutia No 1, Jakarta Barat, 11146",
-  // ];
-  // var estimasi = [
-  //   "Senin, 22 November 2021",
-  //   "Senin, 22 November 2021",
-  //   "Senin, 22 November 2021",
-  //   "Senin, 22 November 2021",
-  // ];
-  // var status = [
-  //   "Selesai",
-  //   "Batal",
-  //   "Proses",
-  //   "Dalam Perjalanan",
-  // ];
-  // var volume = [
-  //   "10",
-  //   "10",
-  //   "10",
-  //   "10",
-  // ];
-
   var _orderid;
   var _alamat;
   var _estimasi;
@@ -85,7 +59,7 @@ class _HistorisState extends State<Historis> {
     };
     var body = jsonEncode(bodi);
 
-    print("bodyy: " + body);
+    //print("bodyy: " + body);
     final response = await http.post(
         Uri.parse(
             "http://10.0.2.2:8000/api/contributor/pickup_orders/get?page=$_pageNumber"),
@@ -93,7 +67,7 @@ class _HistorisState extends State<Historis> {
     ResponsePickup _data = responsePickupFromJson(response.body);
     //developer.log(response.body);
     String statusrespon = _data.status;
-    print("statusnnyaa: " + statusrespon);
+    //print("statusnnyaa: " + statusrespon);
     // int current_page = _data.pickupOrders.currentPage;
     // print("current_page: " + current_page.toString());
     // String pno = _data.pickupOrders.data[0].pickupOrderNo;
@@ -102,10 +76,10 @@ class _HistorisState extends State<Historis> {
 
     setState(() {
       _hasMore = _data.pickupOrders.data.length == _defaultPerPageCount;
-      print("hasmoreee" + _hasMore.toString());
+      //print("hasmoreee" + _hasMore.toString());
       _loading = false;
       _pageNumber = _pageNumber + 1;
-      print("pagenumber:" + _pageNumber.toString());
+      //print("pagenumber:" + _pageNumber.toString());
 
       for (int i = 0; i < _data.pickupOrders.data.length; i++) {
         _orderid.add(_data.pickupOrders.data[i].pickupOrderNo.toString());
@@ -226,35 +200,6 @@ class _HistorisState extends State<Historis> {
                     Expanded(
                       child: getBody(),
                     ),
-                    Container(
-                        padding: EdgeInsets.symmetric(vertical: 2.0),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              // First child is enter comment text input
-                              Expanded(
-                                child: TextFormField(
-                                  autocorrect: false,
-                                  decoration: new InputDecoration(
-                                    labelText: "Some Text",
-                                    labelStyle: TextStyle(
-                                        fontSize: 20.0, color: Colors.white),
-                                    fillColor: Colors.blue,
-                                    border: OutlineInputBorder(
-                                        // borderRadius:
-                                        //     BorderRadius.all(Radius.zero(5.0)),
-                                        borderSide: BorderSide(
-                                            color: Colors.purpleAccent)),
-                                  ),
-                                ),
-                              ),
-                              // Second child is button
-                              IconButton(
-                                icon: Icon(Icons.send),
-                                iconSize: 20.0,
-                                onPressed: () {},
-                              )
-                            ])),
                   ],
                 ),
               ),
@@ -311,8 +256,7 @@ class _HistorisState extends State<Historis> {
                     Navigator.push(
                       context,
                       PageRouteBuilder(
-                        pageBuilder: (c, a1, a2) => //ChatList(),
-                            MainHistory(),
+                        pageBuilder: (c, a1, a2) => ChatAdmin(),
                         transitionsBuilder: (c, anim, a2, child) =>
                             FadeTransition(opacity: anim, child: child),
                         transitionDuration: Duration(milliseconds: 300),
@@ -360,7 +304,7 @@ class _HistorisState extends State<Historis> {
           },
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Text("Error while loading photos, tap to try again"),
+            child: Text("Error ketika loading, coba kembali..."),
           ),
         ));
       }
@@ -368,6 +312,8 @@ class _HistorisState extends State<Historis> {
       return ListView.builder(
           itemCount: _orderid.length + (_hasMore ? 1 : 0),
           itemBuilder: (context, index) {
+            print("idlength: " + _orderid.length.toString());
+            print("indexke: " + index.toString());
             if (index == _orderid.length - _nextPageThreshold) {
               fetchDataPickupOrder();
             }
