@@ -27,7 +27,7 @@ dependencies:
 
   http: ^0.13.4
   shared_preferences: ^0.5.3+4
-  youtube_player_flutter: ^8.0.0
+  #youtube_player_flutter: ^8.0.0
   chat_bubbles: ^1.1.0
   audioplayers: ^0.20.1
   flutter_typeahead: ^3.2.4

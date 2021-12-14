@@ -25,7 +25,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:jelantah/screens/ubah_tutorial.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+//import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import 'account_screen.dart';
 import 'chat_admin.dart';
@@ -64,12 +64,12 @@ class _DashboardState extends State<Dashboard> {
 
   var url, judul, idyoutube, deskripsi, tanggal;
 
-  String getVideoID(String url) {
-    url = YoutubePlayer.convertUrlToId(url)!;
-    // = url.replaceAll("https://www.youtube.com/watch?v=", "");
-    //url = url.replaceAll("https://m.youtube.com/watch?v=", "");
-    return url;
-  }
+  // String getVideoID(String url) {
+  //   url = YoutubePlayer.convertUrlToId(url)!;
+  //   // = url.replaceAll("https://www.youtube.com/watch?v=", "");
+  //   //url = url.replaceAll("https://m.youtube.com/watch?v=", "");
+  //   return url;
+  // }
 
   signOut(String tokenSignout) {
     setState(() {
@@ -112,7 +112,8 @@ class _DashboardState extends State<Dashboard> {
         url.add(dataVideo.videos[i].youtubeLink.toString());
         judul.add(dataVideo.videos[i].name.toString());
         deskripsi.add(dataVideo.videos[i].description.toString());
-        idyoutube.add(getVideoID(dataVideo.videos[i].youtubeLink.toString()));
+        //idyoutube.add(getVideoID(dataVideo.videos[i].youtubeLink.toString()));
+        idyoutube.add(dataVideo.videos[i].youtubeLink.toString());
         String date = dataVideo.videos[i].updatedAt.toString();
         var dateTime = DateTime.parse(date);
         tanggal.add(
@@ -665,10 +666,11 @@ class RC_Video extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        var urllaunchable =
-            await canLaunch(url); //canLaunch is from url_launcher package
+        var urllaunchable = await canLaunch("https://www.youtube.com/watch?v=" +
+            url); //canLaunch is from url_launcher package
         if (urllaunchable) {
-          await launch(url); //launch is from url_launcher package to launch URL
+          await launch("https://www.youtube.com/watch?v=" +
+              url); //launch is from url_launcher package to launch URL
         } else {
           print("URL can't be launched.");
         }
