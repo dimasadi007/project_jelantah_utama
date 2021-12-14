@@ -44,7 +44,7 @@ class _AccountState extends State<Account> {
     Map bodi = {"token": _token};
     var body = json.encode(bodi);
     final response = await http.post(
-      Uri.parse("http://127.0.0.1:8000/api/contributor/session/delete"),
+      Uri.parse("http://10.0.2.2:8000/api/contributor/session/delete"),
       body: body,
     );
     final data = jsonDecode(response.body);
@@ -58,11 +58,11 @@ class _AccountState extends State<Account> {
     Map bodi = {"token": _token};
     var body = json.encode(bodi);
     final response = await http.post(
-      Uri.parse("http://127.0.0.1:8000/api/contributor/user/get"),
+      Uri.parse("http://10.0.2.2:8000/api/contributor/user/get"),
       body: body,
     );
     final data = jsonDecode(response.body);
-    print(_token);
+    //print(_token);
     setState(() {
       _first_name = data['user']['first_name'];
       _last_name = data['user']['last_name'];
@@ -76,7 +76,7 @@ class _AccountState extends State<Account> {
     setState(
       () {
         _token = preferences.getString('token');
-        print(_token);
+        //print(_token);
         status = preferences.getString("status");
         _loginStatus =
             status == "success" ? LoginStatus.signIn : LoginStatus.notSignIn;
