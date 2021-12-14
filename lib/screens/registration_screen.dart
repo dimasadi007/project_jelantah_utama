@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:project_jelantah_utama/models/responseUserCity.dart';
+import 'package:geolocator/geolocator.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -22,7 +23,10 @@ class _RegisterState extends State<Register> {
       nomor_telepon_penerima;
   int price = 4000;
   late int id_city;
-
+  var _currentLocation;
+  var lng;
+  var lat;
+  var lat_user, lng_user;
   final _key = new GlobalKey<FormState>();
   final TextEditingController _pass = TextEditingController();
   final TextEditingController _confirmPass = TextEditingController();
@@ -43,12 +47,16 @@ class _RegisterState extends State<Register> {
     final form = _key.currentState;
     if (form!.validate()) {
       form.save();
+      //getLat();
+      //getLng();
       save();
     }
   }
 
   save() async {
     id_city = id_city.toInt();
+    lat_user = double.parse(lat);
+    lng_user = double.parse(lng);
     Map bodi = {
       "first_name": nama_depan,
       "last_name": nama_belakang,
@@ -65,8 +73,8 @@ class _RegisterState extends State<Register> {
           "postal_code": kode_pos,
           "recipient_name": nama_penerima,
           "phone_number": nomor_telepon_penerima,
-          "latitude": null,
-          "longitude": null
+          "latitude": lat_user,
+          "longitude": lng_user
         }
       ]
     };
@@ -96,10 +104,24 @@ class _RegisterState extends State<Register> {
     }
   }
 
+  Future<Position> _determinePosition() async {
+    return Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+  }
+
+  getUserLocation() async {
+    _currentLocation = await _determinePosition();
+    setState(() {
+      lat = _currentLocation.latitude.toString();
+      lng = _currentLocation.longitude.toString();
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getUserLocation();
   }
 
   @override

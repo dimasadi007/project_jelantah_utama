@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'registration_screen.dart';
 import 'dashboard.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -268,9 +269,20 @@ class _LoginPageState extends State<LoginPage> {
                                                       fontSize: 16),
                                                 ),
                                                 TextButton(
-                                                  onPressed: () {
-                                                    Navigator.pushNamed(context,
-                                                        'registration_screen');
+                                                  onPressed: () async {
+                                                    if (await Permission
+                                                        .location.isGranted) {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          'registration_screen');
+                                                    } else {
+                                                      await Permission.location
+                                                          .request();
+
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          'registration_screen');
+                                                    }
                                                   },
                                                   style: TextButton.styleFrom(
                                                     minimumSize: Size.zero,

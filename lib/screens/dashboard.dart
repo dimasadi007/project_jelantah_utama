@@ -27,6 +27,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
+import 'account_screen.dart';
 import 'chat_admin.dart';
 import 'jadwalkan_penjemputan.dart';
 import 'login_screen.dart';
@@ -117,8 +118,6 @@ class _DashboardState extends State<Dashboard> {
         tanggal.add(
             DateFormat('dd MMMM yyyy', "id_ID").format(dateTime).toString());
       }
-      print(url);
-      print(idyoutube);
     });
 
     // if (status == "success") {
@@ -601,8 +600,7 @@ class _DashboardState extends State<Dashboard> {
                   Navigator.push(
                     context,
                     PageRouteBuilder(
-                      pageBuilder: (c, a1, a2) => //Tutorial(),
-                          MainHistory(),
+                      pageBuilder: (c, a1, a2) => Account(),
                       transitionsBuilder: (c, anim, a2, child) =>
                           FadeTransition(opacity: anim, child: child),
                       transitionDuration: Duration(milliseconds: 300),
