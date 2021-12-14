@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:project_jelantah_utama/screens/account_screen.dart';
 import 'package:project_jelantah_utama/screens/login_screen.dart';
 import 'package:project_jelantah_utama/screens/login_screen2.dart';
 import 'package:project_jelantah_utama/screens/main_dashboard.dart';
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
         'chat_admin': (context) => ChatAdminPage(
               title: 'Admin',
             ),
+        'account': (context) => Account(),
       },
       //home: SplashScreen(),
     );
