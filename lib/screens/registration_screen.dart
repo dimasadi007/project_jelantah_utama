@@ -22,7 +22,7 @@ class _RegisterState extends State<Register> {
       nama_penerima,
       nomor_telepon_penerima;
   int price = 4000;
-  late int id_city;
+  var id_city;
   var _currentLocation;
   var lng;
   var lat;
@@ -31,6 +31,7 @@ class _RegisterState extends State<Register> {
   final TextEditingController _pass = TextEditingController();
   final TextEditingController _confirmPass = TextEditingController();
   final _Controller = TextEditingController();
+  final focusNode = FocusNode();
   var confirmPass;
 
   var listcity;
@@ -120,7 +121,9 @@ class _RegisterState extends State<Register> {
   @override
   void initState() {
     // TODO: implement initState
+
     super.initState();
+    int id_city;
     getUserLocation();
   }
 
@@ -323,9 +326,11 @@ class _RegisterState extends State<Register> {
                                 ),
                                 TypeAheadFormField<City?>(
                                   //controller: _controller,
+
                                   hideSuggestionsOnKeyboardHide: false,
                                   textFieldConfiguration:
                                       TextFieldConfiguration(
+                                    //focusNode: focusNode,
                                     controller: _Controller,
                                     decoration: InputDecoration(
                                       // prefixIcon: Icon(Icons.search),
@@ -333,6 +338,7 @@ class _RegisterState extends State<Register> {
                                       hintText: 'Masukan Kota',
                                     ),
                                   ),
+
                                   suggestionsCallback:
                                       UserApi.getUserSuggestions,
                                   itemBuilder: (context, City? suggestion) {
@@ -364,7 +370,9 @@ class _RegisterState extends State<Register> {
                                   },
                                   validator: (value) {
                                     if (value!.isEmpty) {
-                                      return 'Please select a city';
+                                      return 'Kota kosong! Mohon, dari pilihan yang ada, di klik kota domisili anda';
+                                    } else if (id_city == null) {
+                                      return 'Error! Dari pilihan yang ada, di klik domisili anda';
                                     }
                                   },
                                   onSaved: (value) =>
@@ -509,6 +517,34 @@ class _RegisterState extends State<Register> {
       ),
     );
   }
+
+  void showAlertDialogKota(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Oke"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("ERROR!"),
+      content:
+          Text("Pilih KOTA dengan meng-klik dari pilihan-pilihan yang ada!"),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 }
 
 class UserApi {
@@ -526,7 +562,7 @@ class UserApi {
     print("statusnnyaa: " + statusrespon);
     String cityrespon = _data.cities[0].name;
     print("cityrespon: " + cityrespon);
-    List xx = _data.cities;
+    //List xx = _data.cities;
 
     if (response.statusCode == 200) {
       //final List users = json.decode(response.body);
@@ -546,7 +582,7 @@ class UserApi {
       //return _data.map((json) => City.fromJson(json)).toList();
       //return xx;
     } else {
-      throw Exception();
+      throw Exception("Error, silahkan coba masuk ulang halaman 'Daftar' ini.");
     }
   }
 }

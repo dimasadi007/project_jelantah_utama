@@ -4,6 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:project_jelantah_utama/models/responsePickup.dart';
+import 'package:project_jelantah_utama/screens/historis_item_selesai.dart';
+import 'package:project_jelantah_utama/screens/main_history_konfirmasi.dart';
+import 'package:project_jelantah_utama/screens/main_history_proses.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
@@ -14,9 +17,12 @@ import 'package:intl/intl.dart';
 // import 'package:jelantah/screens/chat_list.dart';
 // import 'package:jelantah/screens/tutorial.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'account_screen.dart';
 import 'chat_admin.dart';
 import 'login_screen.dart';
 import 'main_history2_old.dart';
+import 'main_history_batal.dart';
+import 'main_history_selesai.dart';
 
 class Historis extends StatefulWidget {
   @override
@@ -55,7 +61,17 @@ class _HistorisState extends State<Historis> {
     //try {
     Map bodi = {
       "token": _token,
-      "status": ["pending", "process", "change_date"]
+      "status": [
+        "pending",
+        "processed",
+        "cancelled",
+        "on_pickup",
+        "cancelled_by_contributor",
+        "driver",
+        "change_date",
+        "rejected",
+        "closed"
+      ]
     };
     var body = jsonEncode(bodi);
 
@@ -170,7 +186,19 @@ class _HistorisState extends State<Historis> {
                       child: Row(
                         children: [
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (c, a1, a2) => Historis(),
+                                  transitionsBuilder: (c, anim, a2, child) =>
+                                      FadeTransition(
+                                          opacity: anim, child: child),
+                                  transitionDuration:
+                                      Duration(milliseconds: 300),
+                                ),
+                              );
+                            },
                             child: Text("Semua"),
                             style: ButtonStyle(
                                 backgroundColor: MaterialStateProperty.all(
@@ -183,16 +211,69 @@ class _HistorisState extends State<Historis> {
                                 ))),
                           ),
                           TextButton(
-                            onPressed: () {},
-                            child: Text("Selesai"),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (c, a1, a2) =>
+                                      HistorisKonfirmasi(),
+                                  transitionsBuilder: (c, anim, a2, child) =>
+                                      FadeTransition(
+                                          opacity: anim, child: child),
+                                  transitionDuration:
+                                      Duration(milliseconds: 300),
+                                ),
+                              );
+                            },
+                            child: Text("Konfirmasi"),
                           ),
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (c, a1, a2) => HistorisProses(),
+                                  transitionsBuilder: (c, anim, a2, child) =>
+                                      FadeTransition(
+                                          opacity: anim, child: child),
+                                  transitionDuration:
+                                      Duration(milliseconds: 300),
+                                ),
+                              );
+                            },
                             child: Text("Proses"),
                           ),
                           TextButton(
-                            onPressed: () {},
-                            child: Text("Konfirmasi"),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (c, a1, a2) => HistorisSelesai(),
+                                  transitionsBuilder: (c, anim, a2, child) =>
+                                      FadeTransition(
+                                          opacity: anim, child: child),
+                                  transitionDuration:
+                                      Duration(milliseconds: 300),
+                                ),
+                              );
+                            },
+                            child: Text("Selesai"),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (c, a1, a2) => HistorisBatal(),
+                                  transitionsBuilder: (c, anim, a2, child) =>
+                                      FadeTransition(
+                                          opacity: anim, child: child),
+                                  transitionDuration:
+                                      Duration(milliseconds: 300),
+                                ),
+                              );
+                            },
+                            child: Text("Batal"),
                           ),
                         ],
                       ),
@@ -267,8 +348,7 @@ class _HistorisState extends State<Historis> {
                     Navigator.push(
                       context,
                       PageRouteBuilder(
-                        pageBuilder: (c, a1, a2) => //Tutorial(),
-                            MainHistory(),
+                        pageBuilder: (c, a1, a2) => Account(),
                         transitionsBuilder: (c, anim, a2, child) =>
                             FadeTransition(opacity: anim, child: child),
                         transitionDuration: Duration(milliseconds: 300),
@@ -477,9 +557,22 @@ class _HistorisState extends State<Historis> {
                               ),
                             ],
                           ),
-                          if (status == 'Selesai')
+                          if (status == 'closed')
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (c, a1, a2) =>
+                                        Historis_Item_Selesai(),
+                                    transitionsBuilder: (c, anim, a2, child) =>
+                                        FadeTransition(
+                                            opacity: anim, child: child),
+                                    transitionDuration:
+                                        Duration(milliseconds: 300),
+                                  ),
+                                );
+                              },
                               child: Text(
                                 "Selesai",
                                 style: TextStyle(color: Colors.green),
@@ -494,11 +587,11 @@ class _HistorisState extends State<Historis> {
                                     borderRadius: BorderRadius.circular(10.0),
                                   ))),
                             ),
-                          if (status == 'Batal')
+                          if (status == 'rejected')
                             TextButton(
                               onPressed: () {},
                               child: Text(
-                                "Batal",
+                                "Ditolak",
                                 style: TextStyle(color: Colors.red),
                               ),
                               style: ButtonStyle(
@@ -511,11 +604,96 @@ class _HistorisState extends State<Historis> {
                                     borderRadius: BorderRadius.circular(10.0),
                                   ))),
                             ),
-                          if (status == 'Proses')
+                          if (status == "cancelled")
                             TextButton(
                               onPressed: () {},
                               child: Text(
-                                "Proses",
+                                "Dibatalkan Admin",
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Color(0xffFBE8E8),
+                                  ),
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ))),
+                            ),
+                          if (status == "cancelled_by_contributor")
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                "Dibatalkan Pengguna",
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Color(0xffFBE8E8),
+                                  ),
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ))),
+                            ),
+                          if (status == "cancelled_by_driver")
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                "Dibatalkan Driver",
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Color(0xffFBE8E8),
+                                  ),
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ))),
+                            ),
+                          if (status == 'processed')
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                "Diproses",
+                                style: TextStyle(color: Colors.blueAccent),
+                              ),
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Color(0xffE7EEF4),
+                                  ),
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ))),
+                            ),
+                          if (status == "on_pickup")
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                "Dalam Perjalanan",
+                                style: TextStyle(color: Colors.blueAccent),
+                              ),
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Color(0xffE7EEF4),
+                                  ),
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ))),
+                            ),
+                          if (status == "change_date")
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                "Proses Ubah Tanggal",
                                 style: TextStyle(color: Colors.blueAccent),
                               ),
                               style: ButtonStyle(
