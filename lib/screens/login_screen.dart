@@ -344,7 +344,7 @@ class _LoginPageState extends State<LoginPage> {
         );
         break;
       case LoginStatus.signIn:
-        return Dashboard(signOut);
+        return Dashboard();
         break;
     }
   }

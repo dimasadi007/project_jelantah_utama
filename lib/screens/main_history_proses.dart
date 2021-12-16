@@ -56,63 +56,63 @@ class _HistorisProsesState extends State<HistorisProses> {
   Future<void> fetchDataPickupOrder() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     _token = preferences.getString("token");
-    //try {
-    Map bodi = {
-      "token": _token,
-      "status": ["processed", "on_pickup", "change_date"]
-    };
-    var body = jsonEncode(bodi);
+    try {
+      Map bodi = {
+        "token": _token,
+        "status": ["processed", "on_pickup", "change_date"]
+      };
+      var body = jsonEncode(bodi);
 
-    //print("bodyy: " + body);
-    final response = await http.post(
-        Uri.parse(
-            "http://10.0.2.2:8000/api/contributor/pickup_orders/get?page=$_pageNumber"),
-        body: body);
-    ResponsePickup _data = responsePickupFromJson(response.body);
-    //developer.log(response.body);
-    String statusrespon = _data.status;
-    //print("statusnnyaa: " + statusrespon);
-    // int current_page = _data.pickupOrders.currentPage;
-    // print("current_page: " + current_page.toString());
-    // String pno = _data.pickupOrders.data[0].pickupOrderNo;
-    // print("data: " + pno);
-    // print("length " + _data.pickupOrders.data.length.toString());
+      //print("bodyy: " + body);
+      final response = await http.post(
+          Uri.parse(
+              "http://10.0.2.2:8000/api/contributor/pickup_orders/get?page=$_pageNumber"),
+          body: body);
+      ResponsePickup _data = responsePickupFromJson(response.body);
+      //developer.log(response.body);
+      String statusrespon = _data.status;
+      //print("statusnnyaa: " + statusrespon);
+      // int current_page = _data.pickupOrders.currentPage;
+      // print("current_page: " + current_page.toString());
+      // String pno = _data.pickupOrders.data[0].pickupOrderNo;
+      // print("data: " + pno);
+      // print("length " + _data.pickupOrders.data.length.toString());
 
-    setState(() {
-      _hasMore = _data.pickupOrders.data.length == _defaultPerPageCount;
-      //print("hasmoreee" + _hasMore.toString());
-      _loading = false;
-      _pageNumber = _pageNumber + 1;
-      //print("pagenumber:" + _pageNumber.toString());
+      setState(() {
+        _hasMore = _data.pickupOrders.data.length == _defaultPerPageCount;
+        //print("hasmoreee" + _hasMore.toString());
+        _loading = false;
+        _pageNumber = _pageNumber + 1;
+        //print("pagenumber:" + _pageNumber.toString());
 
-      for (int i = 0; i < _data.pickupOrders.data.length; i++) {
-        _orderid.add(_data.pickupOrders.data[i].pickupOrderNo.toString());
-        _alamat.add(_data.pickupOrders.data[i].address.toString());
-        var _GETestimasi = _data.pickupOrders.data[i].pickupDate;
-        if (_GETestimasi == null) {
-          _estimasi.add("-");
-        } else {
-          _estimasi.add(_GETestimasi);
+        for (int i = 0; i < _data.pickupOrders.data.length; i++) {
+          _orderid.add(_data.pickupOrders.data[i].pickupOrderNo.toString());
+          _alamat.add(_data.pickupOrders.data[i].address.toString());
+          var _GETestimasi = _data.pickupOrders.data[i].pickupDate;
+          if (_GETestimasi == null) {
+            _estimasi.add("-");
+          } else {
+            _estimasi.add(_GETestimasi);
+          }
+          _volume.add(_data.pickupOrders.data[i].estimateVolume.toString());
+          _status.add(_data.pickupOrders.data[i].status.toString());
+
+          String date = _data.pickupOrders.data[i].createdAt.toString();
+          var dateTime = DateTime.parse(date);
+          _created_date.add(
+              DateFormat('dd MMMM yyyy', "id_ID").format(dateTime).toString());
         }
-        _volume.add(_data.pickupOrders.data[i].estimateVolume.toString());
-        _status.add(_data.pickupOrders.data[i].status.toString());
+        // print("orderid: " + _orderid.toString());
+      });
 
-        String date = _data.pickupOrders.data[i].createdAt.toString();
-        var dateTime = DateTime.parse(date);
-        _created_date.add(
-            DateFormat('dd MMMM yyyy', "id_ID").format(dateTime).toString());
-      }
       // print("orderid: " + _orderid.toString());
-    });
-
-    // print("orderid: " + _orderid.toString());
-    // } catch (e) {
-    //   print("catch main history: " + e.toString());
-    //   setState(() {
-    //     _loading = false;
-    //     _error = true;
-    //   });
-    // }
+    } catch (e) {
+      print("catch main history: " + e.toString());
+      setState(() {
+        _loading = false;
+        _error = true;
+      });
+    }
     // print("hasmore bwh: " + _hasMore.toString());
     // print("pagenumber bwh: " + _pageNumber.toString());
     // print("orderid: " + _orderid.toString());
@@ -372,7 +372,7 @@ class _HistorisProsesState extends State<HistorisProses> {
           },
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Text("Error ketika loading, coba kembali..."),
+            child: Text("Gagal loading, coba kembali..."),
           ),
         ));
       }
@@ -545,91 +545,6 @@ class _HistorisProsesState extends State<HistorisProses> {
                               ),
                             ],
                           ),
-                          if (status == 'closed')
-                            TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                "Selesai",
-                                style: TextStyle(color: Colors.green),
-                              ),
-                              style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
-                                    Color(0xffECF8ED),
-                                  ),
-                                  shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ))),
-                            ),
-                          if (status == 'rejected')
-                            TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                "Ditolak",
-                                style: TextStyle(color: Colors.red),
-                              ),
-                              style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
-                                    Color(0xffFBE8E8),
-                                  ),
-                                  shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ))),
-                            ),
-                          if (status == "cancelled")
-                            TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                "Dibatalkan Admin",
-                                style: TextStyle(color: Colors.red),
-                              ),
-                              style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
-                                    Color(0xffFBE8E8),
-                                  ),
-                                  shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ))),
-                            ),
-                          if (status == "cancelled_by_contributor")
-                            TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                "Dibatalkan Pengguna",
-                                style: TextStyle(color: Colors.red),
-                              ),
-                              style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
-                                    Color(0xffFBE8E8),
-                                  ),
-                                  shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ))),
-                            ),
-                          if (status == "cancelled_by_driver")
-                            TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                "Dibatalkan Driver",
-                                style: TextStyle(color: Colors.red),
-                              ),
-                              style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
-                                    Color(0xffFBE8E8),
-                                  ),
-                                  shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ))),
-                            ),
                           if (status == 'processed')
                             TextButton(
                               onPressed: () {},
@@ -674,23 +589,6 @@ class _HistorisProsesState extends State<HistorisProses> {
                               style: ButtonStyle(
                                   backgroundColor: MaterialStateProperty.all(
                                     Color(0xffE7EEF4),
-                                  ),
-                                  shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ))),
-                            ),
-                          if (status == 'pending')
-                            TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                "Menunggu Konfirmasi",
-                                style: TextStyle(color: Colors.orange),
-                              ),
-                              style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
-                                    Color(0xffFEF5E8),
                                   ),
                                   shape: MaterialStateProperty.all<
                                           RoundedRectangleBorder>(

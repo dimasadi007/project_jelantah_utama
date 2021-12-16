@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:project_jelantah_utama/screens/welcome_screen.dart';
 import 'package:project_jelantah_utama/screens/login_screen.dart';
 
-import 'login_screen2.dart';
+import 'dashboard_guest.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -18,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Duration(seconds: 3),
       () => Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (BuildContext context) => LoginPage(),
+          builder: (BuildContext context) => DashboardGuest(),
           //LoginScreen(),
         ),
       ),

@@ -3,12 +3,13 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:project_jelantah_utama/screens/dashboard_guest.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:http/http.dart' as http;
 
 import 'chat_admin.dart';
-import 'login_screen.dart';
+import 'dashboard_guest.dart';
 import 'main_history_semua.dart';
 
 class Account extends StatefulWidget {
@@ -32,12 +33,13 @@ class _AccountState extends State<Account> {
     print("signout jalan");
     SharedPreferences preferences = await SharedPreferences.getInstance();
     setState(() {
-      preferences.setInt("status", null);
+      preferences.setString("status", null);
+      preferences.setString("token", null);
       preferences.commit();
       _loginStatus = LoginStatus.notSignIn;
     });
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => LoginPage()));
+        .push(MaterialPageRoute(builder: (context) => DashboardGuest()));
   }
 
   check() async {
@@ -414,7 +416,7 @@ class _AccountState extends State<Account> {
                   Navigator.push(
                     context,
                     PageRouteBuilder(
-                      pageBuilder: (c, a1, a2) => LoginPage(),
+                      pageBuilder: (c, a1, a2) => DashboardGuest(),
                       transitionsBuilder: (c, anim, a2, child) =>
                           FadeTransition(opacity: anim, child: child),
                       transitionDuration: Duration(milliseconds: 200),

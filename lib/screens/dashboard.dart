@@ -10,7 +10,6 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:project_jelantah_utama/models/responseVideo.dart';
 import 'package:project_jelantah_utama/screens/main_history_semua.dart';
-import 'package:project_jelantah_utama/screens/main_history2_old.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:jelantah/screens/permintaan_penjemputan.dart';
 // import 'package:jelantah/screens/user_baru.dart';
@@ -33,9 +32,9 @@ import 'jadwalkan_penjemputan.dart';
 import 'login_screen.dart';
 
 class Dashboard extends StatefulWidget {
-  final VoidCallback signOut;
-
-  Dashboard(this.signOut);
+  // final VoidCallback signOut;
+  //
+  // Dashboard(this.signOut);
 
   @override
   _DashboardState createState() => _DashboardState();
@@ -71,11 +70,11 @@ class _DashboardState extends State<Dashboard> {
   //   return url;
   // }
 
-  signOut(String tokenSignout) {
-    setState(() {
-      widget.signOut();
-    });
-  }
+  // signOut(String tokenSignout) {
+  //   setState(() {
+  //     widget.signOut();
+  //   });
+  // }
 
   getDataDashboard() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -232,39 +231,6 @@ class _DashboardState extends State<Dashboard> {
                           ),
                         ],
                       ),
-                      Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              // Navigator.of(context).push(MaterialPageRoute(
-                              //     builder: (context) => SettingDataMaster()));
-                            },
-                            icon: Icon(
-                              FlutterIcons.sliders_faw,
-                              color: Colors.black,
-                            ),
-                          ),
-                          // IconButton(
-                          //   onPressed: () {
-                          //     Navigator.of(context).push(MaterialPageRoute(
-                          //         builder: (context) => Account()));
-                          //   },
-                          //   icon: Icon(
-                          //     Icons.account_circle,
-                          //     color: Colors.black,
-                          //   ),
-                          // ),
-                          IconButton(
-                            onPressed: () {
-                              showAlertDialog(context);
-                            },
-                            icon: Icon(
-                              Icons.logout,
-                              color: Colors.black,
-                            ),
-                          )
-                        ],
-                      )
                     ],
                   ),
                 ),
@@ -616,40 +582,41 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  void showAlertDialog(BuildContext context) {
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      child: Text("Tidak"),
-      onPressed: () {
-        Navigator.of(context).pop();
-      },
-    );
-    Widget continueButton = TextButton(
-      child: Text("Ya"),
-      onPressed: () {
-        signOut(_tokenSignout);
-        Navigator.of(context).pop();
-      },
-    );
+  // void showAlertDialog(BuildContext context) {
+  //   // set up the buttons
+  //   Widget cancelButton = TextButton(
+  //     child: Text("Tidak"),
+  //     onPressed: () {
+  //       Navigator.of(context).pop();
+  //     },
+  //   );
+  //   Widget continueButton = TextButton(
+  //     child: Text("Ya"),
+  //     onPressed: () {
+  //       signOut(_tokenSignout);
+  //       Navigator.of(context).pop();
+  //     },
+  //   );
+  //
+  //   // set up the AlertDialog
+  //   AlertDialog alert = AlertDialog(
+  //     title: Text("Log Out"),
+  //     content: Text("Apakah anda ingin keluar dari apps?"),
+  //     actions: [
+  //       cancelButton,
+  //       continueButton,
+  //     ],
+  //   );
+  //
+  //   // show the dialog
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return alert;
+  //     },
+  //   );
+  // }
 
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text("Log Out"),
-      content: Text("Apakah anda ingin keluar dari apps?"),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
 }
 
 class RC_Video extends StatelessWidget {
