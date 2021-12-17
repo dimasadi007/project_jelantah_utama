@@ -28,6 +28,7 @@ import 'package:flutter_icons/flutter_icons.dart';
 
 import 'account_screen.dart';
 import 'chat_admin.dart';
+import 'dashboard_guest.dart';
 import 'jadwalkan_penjemputan.dart';
 import 'login_screen.dart';
 
@@ -56,7 +57,7 @@ class _DashboardState extends State<Dashboard> {
   //var tanggal = ["10 Oktober 2021", "10 Oktober 2021", "10 Oktober 2021"];
   var decodedData;
   var _token, _nama, _tokenSignout;
-
+  late bool is_approve;
   var status, pesan;
   var balance, price;
   var userFirstname;
@@ -106,7 +107,10 @@ class _DashboardState extends State<Dashboard> {
       balance = data['balance'].toString();
       price = data['price'].toString();
       userFirstname = data2['user']["first_name"].toString();
-
+      //print("isapprove: " + data2['user']["is_approve"].toString());
+      if (data2['user']["is_approve"] == 1) {
+        is_approve = true;
+      }
       for (int i = 0; i < dataVideo.videos.length; i++) {
         url.add(dataVideo.videos[i].youtubeLink.toString());
         judul.add(dataVideo.videos[i].name.toString());
@@ -151,6 +155,7 @@ class _DashboardState extends State<Dashboard> {
     idyoutube = [];
     deskripsi = [];
     tanggal = [];
+    is_approve = false;
   }
 
   int _selectedNavbar = 0;
@@ -433,13 +438,23 @@ class _DashboardState extends State<Dashboard> {
                           SizedBox(
                             width: 20,
                           ),
-                          Text(
-                            'Jadwalkan Penjemputan',
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.black,
-                            ),
-                          ),
+                          TextButton(
+                              child: Text(
+                                'Jadwalkan Penjemputan',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              onPressed: () {
+                                if (is_approve == true) {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          JadwalkanPenjemputan()));
+                                } else {
+                                  showAlertDialog(context);
+                                }
+                              }),
                         ],
                       ),
                       Column(
@@ -447,9 +462,13 @@ class _DashboardState extends State<Dashboard> {
                         children: [
                           RawMaterialButton(
                             onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) =>
-                                      JadwalkanPenjemputan()));
+                              if (is_approve == true) {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        JadwalkanPenjemputan()));
+                              } else {
+                                showAlertDialog(context);
+                              }
                             },
                             child: Icon(
                               Icons.arrow_forward,
@@ -534,7 +553,7 @@ class _DashboardState extends State<Dashboard> {
                   Navigator.push(
                     context,
                     PageRouteBuilder(
-                      pageBuilder: (c, a1, a2) => LoginPage(),
+                      pageBuilder: (c, a1, a2) => DashboardGuest(),
                       transitionsBuilder: (c, anim, a2, child) =>
                           FadeTransition(opacity: anim, child: child),
                       transitionDuration: Duration(milliseconds: 200),
@@ -542,16 +561,21 @@ class _DashboardState extends State<Dashboard> {
                   );
                   break;
                 case 1:
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (c, a1, a2) => Historis(),
-                      transitionsBuilder: (c, anim, a2, child) =>
-                          FadeTransition(opacity: anim, child: child),
-                      transitionDuration: Duration(milliseconds: 300),
-                    ),
-                  );
-                  break;
+                  if (is_approve == true) {
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (c, a1, a2) => Historis(),
+                        transitionsBuilder: (c, anim, a2, child) =>
+                            FadeTransition(opacity: anim, child: child),
+                        transitionDuration: Duration(milliseconds: 300),
+                      ),
+                    );
+                    break;
+                  } else {
+                    showAlertDialog(context);
+                    break;
+                  }
                 case 2:
                   Navigator.push(
                     context,
@@ -582,41 +606,34 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  // void showAlertDialog(BuildContext context) {
-  //   // set up the buttons
-  //   Widget cancelButton = TextButton(
-  //     child: Text("Tidak"),
-  //     onPressed: () {
-  //       Navigator.of(context).pop();
-  //     },
-  //   );
-  //   Widget continueButton = TextButton(
-  //     child: Text("Ya"),
-  //     onPressed: () {
-  //       signOut(_tokenSignout);
-  //       Navigator.of(context).pop();
-  //     },
-  //   );
-  //
-  //   // set up the AlertDialog
-  //   AlertDialog alert = AlertDialog(
-  //     title: Text("Log Out"),
-  //     content: Text("Apakah anda ingin keluar dari apps?"),
-  //     actions: [
-  //       cancelButton,
-  //       continueButton,
-  //     ],
-  //   );
-  //
-  //   // show the dialog
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return alert;
-  //     },
-  //   );
-  // }
+  void showAlertDialog(BuildContext context) {
+    // set up the buttons
 
+    Widget continueButton = TextButton(
+      child: Text("Ya"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Akun belum disetujui 'Admin'"),
+      content: Text(
+          "Harap hubungi admin atau menunggu hingga akun berhasil disetujui."),
+      actions: [
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 }
 
 class RC_Video extends StatelessWidget {

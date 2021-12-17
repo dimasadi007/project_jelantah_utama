@@ -149,7 +149,7 @@ class _ChatAdminPageState extends State<ChatAdminPage> {
         var dateTime = DateTime.parse(date);
         _created_date.add(DateFormat('yyyy-MM-dd').format(dateTime).toString());
       }
-      print("tanggalan: " + _created_date.toString());
+      //print("tanggalan: " + _created_date.toString());
     });
   }
 

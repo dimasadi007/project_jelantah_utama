@@ -21,6 +21,7 @@ import 'main_history_batal.dart';
 import 'main_history_konfirmasi.dart';
 import 'main_history_selesai.dart';
 import 'main_history_semua.dart';
+import 'modal_change_date.dart';
 
 class HistorisProses extends StatefulWidget {
   @override
@@ -121,6 +122,39 @@ class _HistorisProsesState extends State<HistorisProses> {
     // print("status: " + _status.toString());
     // print("estimasi" + _estimasi.toString());
     // print("created_date: " + _created_date.toString());
+  }
+
+  changedate(String getorderid) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    _token = preferences.getString("token");
+
+    Map bodi = {"token": _token};
+    var body = jsonEncode(bodi);
+    final response = await http.post(
+        Uri.parse(
+            "http://10.0.2.2:8000/api/contributor/pickup_orders/$getorderid/reschedule/post"),
+        body: body);
+    final data = jsonDecode(response.body);
+
+    String status = data['status'];
+    String message = data['message'];
+    //print("Ini status PEMBATALAN : " + status);
+
+    if (status == "success") {
+      setState(() {
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (c, a1, a2) => Historis(),
+            transitionsBuilder: (c, anim, a2, child) =>
+                FadeTransition(opacity: anim, child: child),
+            transitionDuration: Duration(milliseconds: 300),
+          ),
+        );
+      });
+    } else {
+      print(message);
+    }
   }
 
   @override
@@ -437,8 +471,76 @@ class _HistorisProsesState extends State<HistorisProses> {
             // );
             return GestureDetector(
               onTap: () {
-                // Navigator.of(context).push(
-                //     MaterialPageRoute(builder: (context) => Historis_Item_Selesai()));
+                // CONTAINER PROCESSED + METHOD CHANGE DATE
+                if (status == "processed") {
+                  showModalBottomSheet(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(45),
+                            topRight: Radius.circular(45)),
+                      ),
+                      backgroundColor: Colors.white,
+                      context: context,
+                      builder: (context) {
+                        return Container(
+                          padding: EdgeInsets.all(30),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 50,
+                                        child: Divider(
+                                          color: Colors.blue,
+                                          thickness: 5,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 15,
+                                  ),
+                                  Container(
+                                    child: Divider(color: Colors.blue),
+                                  ),
+                                  modalChangeDate(orderid, created_date, alamat,
+                                      estimasi, volume)
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: Color.fromRGBO(231, 238, 244, 1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: TextButton(
+                                      onPressed: () {
+                                        showAlertDialog_changedate(
+                                            context, orderid);
+                                      },
+                                      child: Text(
+                                        'Permintaan Perubahan Jadwal',
+                                        style: TextStyle(
+                                            color:
+                                                Color.fromRGBO(18, 88, 148, 1)),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        );
+                      });
+                }
               },
               child: Container(
                 margin: EdgeInsets.fromLTRB(30, 5, 30, 5),
@@ -547,7 +649,87 @@ class _HistorisProsesState extends State<HistorisProses> {
                           ),
                           if (status == 'processed')
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                showModalBottomSheet(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(45),
+                                          topRight: Radius.circular(45)),
+                                    ),
+                                    backgroundColor: Colors.white,
+                                    context: context,
+                                    builder: (context) {
+                                      return Container(
+                                        padding: EdgeInsets.all(30),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Container(
+                                                      width: 50,
+                                                      child: Divider(
+                                                        color: Colors.blue,
+                                                        thickness: 5,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 15,
+                                                ),
+                                                Container(
+                                                  child: Divider(
+                                                      color: Colors.blue),
+                                                ),
+                                                modalChangeDate(
+                                                    orderid,
+                                                    created_date,
+                                                    alamat,
+                                                    estimasi,
+                                                    volume)
+                                              ],
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.stretch,
+                                              children: [
+                                                Container(
+                                                  height: 50,
+                                                  decoration: BoxDecoration(
+                                                    color: Color.fromRGBO(
+                                                        231, 238, 244, 1),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                  child: TextButton(
+                                                    onPressed: () {
+                                                      showAlertDialog_changedate(
+                                                          context, orderid);
+                                                    },
+                                                    child: Text(
+                                                      'Permintaan Perubahan Jadwal',
+                                                      style: TextStyle(
+                                                          color: Color.fromRGBO(
+                                                              18, 88, 148, 1)),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      );
+                                    });
+                              },
                               child: Text(
                                 "Diproses",
                                 style: TextStyle(color: Colors.blueAccent),
@@ -606,6 +788,41 @@ class _HistorisProsesState extends State<HistorisProses> {
           });
     }
     return Container();
+  }
+
+  void showAlertDialog_changedate(BuildContext context, String orderid) {
+    // set up the buttons
+    String getorderid = orderid;
+    Widget cancelButton = TextButton(
+      child: Text("Tidak"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Ya"),
+      onPressed: () {
+        changedate(getorderid);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Ubah Tanggal Penjemputan"),
+      content: Text("Apakah yakin ingin meminta perubahan tanggal jemput?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }
 

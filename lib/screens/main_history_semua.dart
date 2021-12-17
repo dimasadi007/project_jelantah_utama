@@ -4,9 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:project_jelantah_utama/models/responsePickup.dart';
+import 'package:project_jelantah_utama/screens/dashboard_guest.dart';
 import 'package:project_jelantah_utama/screens/historis_item_selesai.dart';
 import 'package:project_jelantah_utama/screens/main_history_konfirmasi.dart';
 import 'package:project_jelantah_utama/screens/main_history_proses.dart';
+import 'package:project_jelantah_utama/screens/modal_change_date.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
@@ -19,6 +21,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'account_screen.dart';
 import 'chat_admin.dart';
+import 'dashboard.dart';
 import 'historis_item_batal.dart';
 import 'login_screen.dart';
 import 'main_history_batal.dart';
@@ -29,13 +32,18 @@ class Historis extends StatefulWidget {
   _HistorisState createState() => _HistorisState();
 }
 
+enum LoginStatus { notSignIn, signIn }
+
 class _HistorisState extends State<Historis> {
+  LoginStatus _loginStatus = LoginStatus.notSignIn;
   var _orderid;
   var _alamat;
   var _estimasi;
   var _status;
   var _volume;
   var _created_date;
+
+  var status;
 
   late bool _hasMore;
   late int _pageNumber;
@@ -57,6 +65,16 @@ class _HistorisState extends State<Historis> {
 
   Future<void> fetchDataPickupOrder() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        status = preferences.getString("status");
+        _token = (preferences.getString('token') ?? '');
+
+        _loginStatus =
+            status == "success" ? LoginStatus.signIn : LoginStatus.notSignIn;
+      });
+    }
+    //SharedPreferences preferences = await SharedPreferences.getInstance();
     _token = preferences.getString("token");
     try {
       Map bodi = {
@@ -91,12 +109,6 @@ class _HistorisState extends State<Historis> {
       // print("length " + _data.pickupOrders.data.length.toString());
 
       setState(() {
-        _hasMore = _data.pickupOrders.data.length == _defaultPerPageCount;
-        //print("hasmoreee" + _hasMore.toString());
-        _loading = false;
-        _pageNumber = _pageNumber + 1;
-        //print("pagenumber:" + _pageNumber.toString());
-
         for (int i = 0; i < _data.pickupOrders.data.length; i++) {
           _orderid.add(_data.pickupOrders.data[i].pickupOrderNo.toString());
           _alamat.add(_data.pickupOrders.data[i].address.toString());
@@ -114,7 +126,12 @@ class _HistorisState extends State<Historis> {
           _created_date.add(
               DateFormat('dd MMMM yyyy', "id_ID").format(dateTime).toString());
         }
-        // print("orderid: " + _orderid.toString());
+        _hasMore = _data.pickupOrders.data.length == _defaultPerPageCount;
+        print("hasmoreee" + _hasMore.toString());
+        _loading = false;
+        _pageNumber = _pageNumber + 1;
+        print("pagenumber:" + _pageNumber.toString());
+        print("orderid: " + _orderid.toString());
       });
 
       // print("orderid: " + _orderid.toString());
@@ -133,6 +150,65 @@ class _HistorisState extends State<Historis> {
     // print("status: " + _status.toString());
     // print("estimasi" + _estimasi.toString());
     // print("created_date: " + _created_date.toString());
+  }
+
+  pembatalan(String getorderid) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    _token = preferences.getString("token");
+
+    Map bodi = {"token": _token};
+    var body = jsonEncode(bodi);
+    final response = await http.post(
+        Uri.parse(
+            "http://10.0.2.2:8000/api/contributor/pickup_orders/$getorderid/cancel/post"),
+        body: body);
+    final data = jsonDecode(response.body);
+
+    String status = data['status'];
+    String message = data['message'];
+    //print("Ini status PEMBATALAN : " + status);
+
+    if (status == "success") {
+      setState(() {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => Historis_Item_Batal(orderid: getorderid)));
+      });
+    } else {
+      print(message);
+    }
+  }
+
+  changedate(String getorderid) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    _token = preferences.getString("token");
+
+    Map bodi = {"token": _token};
+    var body = jsonEncode(bodi);
+    final response = await http.post(
+        Uri.parse(
+            "http://10.0.2.2:8000/api/contributor/pickup_orders/$getorderid/reschedule/post"),
+        body: body);
+    final data = jsonDecode(response.body);
+
+    String status = data['status'];
+    String message = data['message'];
+    //print("Ini status PEMBATALAN : " + status);
+
+    if (status == "success") {
+      setState(() {
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (c, a1, a2) => Historis(),
+            transitionsBuilder: (c, anim, a2, child) =>
+                FadeTransition(opacity: anim, child: child),
+            transitionDuration: Duration(milliseconds: 300),
+          ),
+        );
+      });
+    } else {
+      print(message);
+    }
   }
 
   @override
@@ -158,210 +234,223 @@ class _HistorisState extends State<Historis> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: kIsWeb ? 500.0 : double.infinity,
-        child: DefaultTabController(
-          length: 4,
-          child: Scaffold(
-            appBar: AppBar(
-                title: Text(
-                  "Riwayat",
-                  style: TextStyle(
-                    color: Colors.blue, // 3
-                  ),
-                ),
-                automaticallyImplyLeading: false,
-                backgroundColor: Colors.white,
-                elevation: 0),
-            body: Center(
-              child: Container(
-                color: Color.fromRGBO(245, 245, 245, 1),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.fromLTRB(30, 5, 30, 5),
-                      color: Colors.white,
-                      child: Row(
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder: (c, a1, a2) => Historis(),
-                                  transitionsBuilder: (c, anim, a2, child) =>
-                                      FadeTransition(
-                                          opacity: anim, child: child),
-                                  transitionDuration:
-                                      Duration(milliseconds: 300),
-                                ),
-                              );
-                            },
-                            child: Text("Semua"),
-                            style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                  Color(0xffE7EEF4),
-                                ),
-                                shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ))),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder: (c, a1, a2) =>
-                                      HistorisKonfirmasi(),
-                                  transitionsBuilder: (c, anim, a2, child) =>
-                                      FadeTransition(
-                                          opacity: anim, child: child),
-                                  transitionDuration:
-                                      Duration(milliseconds: 300),
-                                ),
-                              );
-                            },
-                            child: Text("Konfirmasi"),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder: (c, a1, a2) => HistorisProses(),
-                                  transitionsBuilder: (c, anim, a2, child) =>
-                                      FadeTransition(
-                                          opacity: anim, child: child),
-                                  transitionDuration:
-                                      Duration(milliseconds: 300),
-                                ),
-                              );
-                            },
-                            child: Text("Proses"),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder: (c, a1, a2) => HistorisSelesai(),
-                                  transitionsBuilder: (c, anim, a2, child) =>
-                                      FadeTransition(
-                                          opacity: anim, child: child),
-                                  transitionDuration:
-                                      Duration(milliseconds: 300),
-                                ),
-                              );
-                            },
-                            child: Text("Selesai"),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder: (c, a1, a2) => HistorisBatal(),
-                                  transitionsBuilder: (c, anim, a2, child) =>
-                                      FadeTransition(
-                                          opacity: anim, child: child),
-                                  transitionDuration:
-                                      Duration(milliseconds: 300),
-                                ),
-                              );
-                            },
-                            child: Text("Batal"),
-                          ),
-                        ],
+    switch (_loginStatus) {
+      case LoginStatus.signIn:
+        return Center(
+          child: Container(
+            width: kIsWeb ? 500.0 : double.infinity,
+            child: DefaultTabController(
+              length: 4,
+              child: Scaffold(
+                appBar: AppBar(
+                    title: Text(
+                      "Riwayat",
+                      style: TextStyle(
+                        color: Colors.blue, // 3
                       ),
                     ),
-                    Expanded(
-                      child: getBody(),
+                    automaticallyImplyLeading: false,
+                    backgroundColor: Colors.white,
+                    elevation: 0),
+                body: Center(
+                  child: Container(
+                    color: Color.fromRGBO(245, 245, 245, 1),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.fromLTRB(30, 5, 30, 5),
+                          color: Colors.white,
+                          child: Row(
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      pageBuilder: (c, a1, a2) => Historis(),
+                                      transitionsBuilder:
+                                          (c, anim, a2, child) =>
+                                              FadeTransition(
+                                                  opacity: anim, child: child),
+                                      transitionDuration:
+                                          Duration(milliseconds: 300),
+                                    ),
+                                  );
+                                },
+                                child: Text("Semua"),
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                      Color(0xffE7EEF4),
+                                    ),
+                                    shape: MaterialStateProperty.all<
+                                            RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ))),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      pageBuilder: (c, a1, a2) =>
+                                          HistorisKonfirmasi(),
+                                      transitionsBuilder:
+                                          (c, anim, a2, child) =>
+                                              FadeTransition(
+                                                  opacity: anim, child: child),
+                                      transitionDuration:
+                                          Duration(milliseconds: 300),
+                                    ),
+                                  );
+                                },
+                                child: Text("Konfirmasi"),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      pageBuilder: (c, a1, a2) =>
+                                          HistorisProses(),
+                                      transitionsBuilder:
+                                          (c, anim, a2, child) =>
+                                              FadeTransition(
+                                                  opacity: anim, child: child),
+                                      transitionDuration:
+                                          Duration(milliseconds: 300),
+                                    ),
+                                  );
+                                },
+                                child: Text("Proses"),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      pageBuilder: (c, a1, a2) =>
+                                          HistorisSelesai(),
+                                      transitionsBuilder:
+                                          (c, anim, a2, child) =>
+                                              FadeTransition(
+                                                  opacity: anim, child: child),
+                                      transitionDuration:
+                                          Duration(milliseconds: 300),
+                                    ),
+                                  );
+                                },
+                                child: Text("Selesai"),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      pageBuilder: (c, a1, a2) =>
+                                          HistorisBatal(),
+                                      transitionsBuilder:
+                                          (c, anim, a2, child) =>
+                                              FadeTransition(
+                                                  opacity: anim, child: child),
+                                      transitionDuration:
+                                          Duration(milliseconds: 300),
+                                    ),
+                                  );
+                                },
+                                child: Text("Batal"),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: getBody(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                bottomNavigationBar: BottomNavigationBar(
+                  type: BottomNavigationBarType.fixed,
+                  items: const <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home_outlined),
+                      title: Text('Beranda'),
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(FlutterIcons.file_text_o_faw),
+                      title: Text('Riwayat'),
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.chat_outlined),
+                      title: Text('Pesan'),
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.person_outline),
+                      title: Text('Profil'),
                     ),
                   ],
+                  currentIndex: _selectedNavbar,
+                  selectedItemColor: Colors.blue,
+                  unselectedItemColor: Colors.blueGrey,
+                  showUnselectedLabels: true,
+                  onTap: (index) {
+                    switch (index) {
+                      case 0:
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (c, a1, a2) => LoginPage(),
+                            transitionsBuilder: (c, anim, a2, child) =>
+                                FadeTransition(opacity: anim, child: child),
+                            transitionDuration: Duration(milliseconds: 200),
+                          ),
+                        );
+                        break;
+                      case 1:
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (c, a1, a2) => Historis(),
+                            transitionsBuilder: (c, anim, a2, child) =>
+                                FadeTransition(opacity: anim, child: child),
+                            transitionDuration: Duration(milliseconds: 300),
+                          ),
+                        );
+                        break;
+                      case 2:
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (c, a1, a2) => ChatAdmin(),
+                            transitionsBuilder: (c, anim, a2, child) =>
+                                FadeTransition(opacity: anim, child: child),
+                            transitionDuration: Duration(milliseconds: 300),
+                          ),
+                        );
+                        break;
+                      case 3:
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (c, a1, a2) => Account(),
+                            transitionsBuilder: (c, anim, a2, child) =>
+                                FadeTransition(opacity: anim, child: child),
+                            transitionDuration: Duration(milliseconds: 300),
+                          ),
+                        );
+                        break;
+                    }
+                  },
                 ),
               ),
             ),
-            bottomNavigationBar: BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home_outlined),
-                  title: Text('Beranda'),
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(FlutterIcons.file_text_o_faw),
-                  title: Text('Riwayat'),
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.chat_outlined),
-                  title: Text('Pesan'),
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person_outline),
-                  title: Text('Profil'),
-                ),
-              ],
-              currentIndex: _selectedNavbar,
-              selectedItemColor: Colors.blue,
-              unselectedItemColor: Colors.blueGrey,
-              showUnselectedLabels: true,
-              onTap: (index) {
-                switch (index) {
-                  case 0:
-                    Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (c, a1, a2) => LoginPage(),
-                        transitionsBuilder: (c, anim, a2, child) =>
-                            FadeTransition(opacity: anim, child: child),
-                        transitionDuration: Duration(milliseconds: 200),
-                      ),
-                    );
-                    break;
-                  case 1:
-                    Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (c, a1, a2) => Historis(),
-                        transitionsBuilder: (c, anim, a2, child) =>
-                            FadeTransition(opacity: anim, child: child),
-                        transitionDuration: Duration(milliseconds: 300),
-                      ),
-                    );
-                    break;
-                  case 2:
-                    Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (c, a1, a2) => ChatAdmin(),
-                        transitionsBuilder: (c, anim, a2, child) =>
-                            FadeTransition(opacity: anim, child: child),
-                        transitionDuration: Duration(milliseconds: 300),
-                      ),
-                    );
-                    break;
-                  case 3:
-                    Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (c, a1, a2) => Account(),
-                        transitionsBuilder: (c, anim, a2, child) =>
-                            FadeTransition(opacity: anim, child: child),
-                        transitionDuration: Duration(milliseconds: 300),
-                      ),
-                    );
-                    break;
-                }
-              },
-            ),
           ),
-        ),
-      ),
-    );
+        );
+      case LoginStatus.notSignIn:
+        return DashboardGuest();
+    }
   }
 
   Widget getBody() {
@@ -392,8 +481,10 @@ class _HistorisState extends State<Historis> {
       return ListView.builder(
           itemCount: _orderid.length + (_hasMore ? 1 : 0),
           itemBuilder: (context, index) {
-            //print("idlength: " + _orderid.length.toString());
-            //print("indexke: " + index.toString());
+            var itemcount = _orderid.length + (_hasMore ? 1 : 0);
+            print("itemcount: " + itemcount.toString());
+            print("idlength: " + _orderid.length.toString());
+            print("indexke: " + index.toString());
             if (index == _orderid.length - _nextPageThreshold) {
               fetchDataPickupOrder();
             }
@@ -449,6 +540,7 @@ class _HistorisState extends State<Historis> {
             // );
             return GestureDetector(
               onTap: () {
+                // CONTAINER SELESAI + METHOD KE DETAIL ITEM SELESAI
                 if (status == 'closed') {
                   Navigator.push(
                     context,
@@ -461,7 +553,11 @@ class _HistorisState extends State<Historis> {
                     ),
                   );
                 }
-                if (status == 'rejected') {
+                //CONTAINER BATAL/TOLAK + METHOD ITEM BATAL/TOLAK
+                if (status == 'rejected' ||
+                    status == "cancelled" ||
+                    status == "cancelled_by_driver" ||
+                    status == "cancelled_by_contributor") {
                   Navigator.push(
                     context,
                     PageRouteBuilder(
@@ -473,17 +569,153 @@ class _HistorisState extends State<Historis> {
                     ),
                   );
                 }
-                if (status == "cancelled") {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (c, a1, a2) =>
-                          Historis_Item_Batal(orderid: orderid),
-                      transitionsBuilder: (c, anim, a2, child) =>
-                          FadeTransition(opacity: anim, child: child),
-                      transitionDuration: Duration(milliseconds: 300),
-                    ),
-                  );
+
+                // CONTAINER PENDING + METHOD CANCEL
+                if (status == "pending") {
+                  showModalBottomSheet(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(45),
+                            topRight: Radius.circular(45)),
+                      ),
+                      backgroundColor: Colors.white,
+                      context: context,
+                      builder: (context) {
+                        return Container(
+                          padding: EdgeInsets.all(30),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                //crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 50,
+                                        child: Divider(
+                                          color: Colors.blue,
+                                          thickness: 5,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 15,
+                                  ),
+                                  Container(
+                                    child: Divider(color: Colors.blue),
+                                  ),
+                                  SizedBox(
+                                    height: 15,
+                                  ),
+                                  Center(
+                                    child: Text(
+                                      'Apa anda yakin ingin membatalkannya?',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: Color(0xffD61C1C),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: TextButton(
+                                        onPressed: () {
+                                          showAlertDialog_pembatalan(
+                                              context, orderid);
+                                        },
+                                        child: Text('Batalkan Pengambilan',
+                                            style: TextStyle(
+                                                color: Colors.white))),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        );
+                      });
+                }
+                // CONTAINER PROCESSED + METHOD CHANGE DATE
+                if (status == "processed") {
+                  showModalBottomSheet(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(45),
+                            topRight: Radius.circular(45)),
+                      ),
+                      backgroundColor: Colors.white,
+                      context: context,
+                      builder: (context) {
+                        return Container(
+                          padding: EdgeInsets.all(30),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 50,
+                                        child: Divider(
+                                          color: Colors.blue,
+                                          thickness: 5,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 15,
+                                  ),
+                                  Container(
+                                    child: Divider(color: Colors.blue),
+                                  ),
+                                  modalChangeDate(orderid, created_date, alamat,
+                                      estimasi, volume)
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: Color.fromRGBO(231, 238, 244, 1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: TextButton(
+                                      onPressed: () {
+                                        showAlertDialog_changedate(
+                                            context, orderid);
+                                      },
+                                      child: Text(
+                                        'Permintaan Perubahan Jadwal',
+                                        style: TextStyle(
+                                            color:
+                                                Color.fromRGBO(18, 88, 148, 1)),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        );
+                      });
                 }
 
                 if (status == "cancelled_by_contributor") {
@@ -768,7 +1000,87 @@ class _HistorisState extends State<Historis> {
                             ),
                           if (status == 'processed')
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                showModalBottomSheet(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(45),
+                                          topRight: Radius.circular(45)),
+                                    ),
+                                    backgroundColor: Colors.white,
+                                    context: context,
+                                    builder: (context) {
+                                      return Container(
+                                        padding: EdgeInsets.all(30),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Container(
+                                                      width: 50,
+                                                      child: Divider(
+                                                        color: Colors.blue,
+                                                        thickness: 5,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 15,
+                                                ),
+                                                Container(
+                                                  child: Divider(
+                                                      color: Colors.blue),
+                                                ),
+                                                modalChangeDate(
+                                                    orderid,
+                                                    created_date,
+                                                    alamat,
+                                                    estimasi,
+                                                    volume)
+                                              ],
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.stretch,
+                                              children: [
+                                                Container(
+                                                  height: 50,
+                                                  decoration: BoxDecoration(
+                                                    color: Color.fromRGBO(
+                                                        231, 238, 244, 1),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                  child: TextButton(
+                                                    onPressed: () {
+                                                      showAlertDialog_changedate(
+                                                          context, orderid);
+                                                    },
+                                                    child: Text(
+                                                      'Permintaan Perubahan Jadwal',
+                                                      style: TextStyle(
+                                                          color: Color.fromRGBO(
+                                                              18, 88, 148, 1)),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      );
+                                    });
+                              },
                               child: Text(
                                 "Diproses",
                                 style: TextStyle(color: Colors.blueAccent),
@@ -817,9 +1129,92 @@ class _HistorisState extends State<Historis> {
                                     borderRadius: BorderRadius.circular(10.0),
                                   ))),
                             ),
+                          // TOMBOL KECIL PENDING + METHOD CANCEL
                           if (status == 'pending')
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                showModalBottomSheet(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(45),
+                                          topRight: Radius.circular(45)),
+                                    ),
+                                    backgroundColor: Colors.white,
+                                    context: context,
+                                    builder: (context) {
+                                      return Container(
+                                        padding: EdgeInsets.all(30),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Container(
+                                                      width: 50,
+                                                      child: Divider(
+                                                        color: Colors.blue,
+                                                        thickness: 5,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 15,
+                                                ),
+                                                Container(
+                                                  child: Divider(
+                                                      color: Colors.blue),
+                                                ),
+                                                SizedBox(
+                                                  height: 15,
+                                                ),
+                                                Text(
+                                                  'Apa anda yakin ingin membatalkannya?',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.stretch,
+                                              children: [
+                                                Container(
+                                                  height: 50,
+                                                  decoration: BoxDecoration(
+                                                    color: Color(0xffD61C1C),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                  child: TextButton(
+                                                      onPressed: () {
+                                                        showAlertDialog_pembatalan(
+                                                            context, orderid);
+                                                      },
+                                                      child: Text(
+                                                          'Batalkan Pengambilan',
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .white))),
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      );
+                                    });
+                              },
                               child: Text(
                                 "Menunggu Konfirmasi",
                                 style: TextStyle(color: Colors.orange),
@@ -844,6 +1239,76 @@ class _HistorisState extends State<Historis> {
           });
     }
     return Container();
+  }
+
+  void showAlertDialog_pembatalan(BuildContext context, String orderid) {
+    // set up the buttons
+    String getorderid = orderid;
+    Widget cancelButton = TextButton(
+      child: Text("Tidak"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Ya"),
+      onPressed: () {
+        pembatalan(getorderid);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Batalkan order"),
+      content: Text("Apakah ingin membatalkan order?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  void showAlertDialog_changedate(BuildContext context, String orderid) {
+    // set up the buttons
+    String getorderid = orderid;
+    Widget cancelButton = TextButton(
+      child: Text("Tidak"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Ya"),
+      onPressed: () {
+        changedate(getorderid);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Ubah Tanggal Penjemputan"),
+      content: Text("Apakah yakin ingin meminta perubahan tanggal jemput?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }
 

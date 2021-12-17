@@ -40,10 +40,10 @@ class DashboardGuest extends StatefulWidget {
   _DashboardGuestState createState() => _DashboardGuestState();
 }
 
-enum LoginStatus { notSignIn, signIn }
+enum LoginStatusDashboardGuest { notSignIn, signIn }
 
 class _DashboardGuestState extends State<DashboardGuest> {
-  LoginStatus _loginStatus = LoginStatus.notSignIn;
+  LoginStatusDashboardGuest _loginStatus = LoginStatusDashboardGuest.notSignIn;
 
   // var url = [
   //   "https://www.youtube.com/watch?v=LvUYbxlSGHw",
@@ -150,25 +150,27 @@ class _DashboardGuestState extends State<DashboardGuest> {
         body: bodyVideo);
     ResponseVideo dataVideo = responseVideoFromJson(responseVideo.body);
 
-    setState(() {
-      // status = data['status'];
-      // pesan = data['message'];
-      // balance = data['balance'].toString();
-      // price = data['price'].toString();
-      // userFirstname = data2['user']["first_name"].toString();
+    if (mounted) {
+      setState(() {
+        // status = data['status'];
+        // pesan = data['message'];
+        // balance = data['balance'].toString();
+        // price = data['price'].toString();
+        // userFirstname = data2['user']["first_name"].toString();
 
-      for (int i = 0; i < dataVideo.videos.length; i++) {
-        url.add(dataVideo.videos[i].youtubeLink.toString());
-        judul.add(dataVideo.videos[i].name.toString());
-        deskripsi.add(dataVideo.videos[i].description.toString());
-        //idyoutube.add(getVideoID(dataVideo.videos[i].youtubeLink.toString()));
-        idyoutube.add(dataVideo.videos[i].youtubeLink.toString());
-        String date = dataVideo.videos[i].updatedAt.toString();
-        var dateTime = DateTime.parse(date);
-        tanggal.add(
-            DateFormat('dd MMMM yyyy', "id_ID").format(dateTime).toString());
-      }
-    });
+        for (int i = 0; i < dataVideo.videos.length; i++) {
+          url.add(dataVideo.videos[i].youtubeLink.toString());
+          judul.add(dataVideo.videos[i].name.toString());
+          deskripsi.add(dataVideo.videos[i].description.toString());
+          //idyoutube.add(getVideoID(dataVideo.videos[i].youtubeLink.toString()));
+          idyoutube.add(dataVideo.videos[i].youtubeLink.toString());
+          String date = dataVideo.videos[i].updatedAt.toString();
+          var dateTime = DateTime.parse(date);
+          tanggal.add(
+              DateFormat('dd MMMM yyyy', "id_ID").format(dateTime).toString());
+        }
+      });
+    }
 
     // if (status == "success") {
     // SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -186,13 +188,16 @@ class _DashboardGuestState extends State<DashboardGuest> {
 
   getPref() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    setState(() {
-      status = preferences.getString("status");
-      _token = (preferences.getString('token') ?? '');
+    if (mounted) {
+      setState(() {
+        status = preferences.getString("status");
+        _token = (preferences.getString('token') ?? '');
 
-      _loginStatus =
-          status == "success" ? LoginStatus.signIn : LoginStatus.notSignIn;
-    });
+        _loginStatus = status == "success"
+            ? LoginStatusDashboardGuest.signIn
+            : LoginStatusDashboardGuest.notSignIn;
+      });
+    }
     getDataDashboard();
   }
 
@@ -219,7 +224,7 @@ class _DashboardGuestState extends State<DashboardGuest> {
   @override
   Widget build(BuildContext context) {
     switch (_loginStatus) {
-      case LoginStatus.notSignIn:
+      case LoginStatusDashboardGuest.notSignIn:
         return Center(
           child: Container(
             width: kIsWeb ? 500.0 : double.infinity,
@@ -242,17 +247,17 @@ class _DashboardGuestState extends State<DashboardGuest> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Halo,",
+                                "Hai,",
                                 style: TextStyle(
                                   color: Colors.black, fontSize: 20, // 3
                                 ),
                                 textAlign: TextAlign.left,
                               ),
                               Text(
-                                "Guest",
+                                "Selamat datang di Jemput Jelantah App",
                                 style: TextStyle(
                                     color: Colors.black,
-                                    fontSize: 30,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.bold // 3
                                     ),
                               ),
@@ -355,49 +360,91 @@ class _DashboardGuestState extends State<DashboardGuest> {
                   ],
                 ),
               ),
+              bottomNavigationBar: BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                items: const <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home_outlined),
+                    title: Text('Beranda'),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(FlutterIcons.file_text_o_faw),
+                    title: Text('Riwayat'),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.chat_outlined),
+                    title: Text('Pesan'),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.person_outline),
+                    title: Text('Profil'),
+                  ),
+                ],
+                currentIndex: _selectedNavbar,
+                selectedItemColor: Colors.blue,
+                unselectedItemColor: Colors.blueGrey,
+                showUnselectedLabels: true,
+                onTap: (index) {
+                  switch (index) {
+                    case 0:
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder: (c, a1, a2) => DashboardGuest(),
+                          transitionsBuilder: (c, anim, a2, child) =>
+                              FadeTransition(opacity: anim, child: child),
+                          transitionDuration: Duration(milliseconds: 200),
+                        ),
+                      );
+                      break;
+                    case 1:
+                      showAlertDialog(context);
+                      break;
+                    case 2:
+                      showAlertDialog(context);
+                      break;
+                    case 3:
+                      showAlertDialog(context);
+                      break;
+                  }
+                },
+              ),
             ),
           ),
         );
 
-      case LoginStatus.signIn:
+      case LoginStatusDashboardGuest.signIn:
         return Dashboard();
     }
   }
 
-  // void showAlertDialog(BuildContext context) {
-  //   // set up the buttons
-  //   Widget cancelButton = TextButton(
-  //     child: Text("Tidak"),
-  //     onPressed: () {
-  //       Navigator.of(context).pop();
-  //     },
-  //   );
-  //   Widget continueButton = TextButton(
-  //     child: Text("Ya"),
-  //     onPressed: () {
-  //       signOut(_tokenSignout);
-  //       Navigator.of(context).pop();
-  //     },
-  //   );
-  //
-  //   // set up the AlertDialog
-  //   AlertDialog alert = AlertDialog(
-  //     title: Text("Log Out"),
-  //     content: Text("Apakah anda ingin keluar dari apps?"),
-  //     actions: [
-  //       cancelButton,
-  //       continueButton,
-  //     ],
-  //   );
-  //
-  //   // show the dialog
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return alert;
-  //     },
-  //   );
-  // }
+  void showAlertDialog(BuildContext context) {
+    // set up the buttons
+
+    Widget continueButton = TextButton(
+      child: Text("Ya"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Mode Guest"),
+      content: Text("Harap Login terlebih dahulu untuk mengakses menu ini."),
+      actions: [
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 }
 
 class RC_Video extends StatelessWidget {
