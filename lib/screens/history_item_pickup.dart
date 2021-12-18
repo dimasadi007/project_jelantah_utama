@@ -8,7 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:intl/intl.dart';
+//import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 class Historis_Item_Map extends StatefulWidget {
@@ -68,7 +68,7 @@ class _Historis_Item_MapState extends State<Historis_Item_Map> {
   late PolylinePoints polylinePoints;
 
   DateTime now1 = DateTime.now();
-  var formatter = new DateFormat('dd MMMM yyyy');
+  //var formatter = new DateFormat('dd MMMM yyyy');
 
   List months = [
     'jan',
@@ -90,7 +90,7 @@ class _Historis_Item_MapState extends State<Historis_Item_Map> {
   @override
   void initState() {
     super.initState();
-    getUserLocation();
+    getDriverLocation();
 
     //getPref();
 
@@ -151,13 +151,14 @@ class _Historis_Item_MapState extends State<Historis_Item_Map> {
     setState(() {
       token = (preferences.getString('token'));
     });
-
-    Map bodi = {"token": token};
+    int pickup_order_no = int.parse(widget.orderid);
+    Map bodi = {"token": token, "pickup_order_no": pickup_order_no};
     var body = jsonEncode(bodi);
     final response = await http.post(
-        Uri.parse("http://10.0.2.2:8000/api/contributor/driver/location/get"),
+        Uri.parse("http://10.0.2.2:8000/api/contributor/drivers/location/get"),
         body: body);
     final data = jsonDecode(response.body);
+    print(data.toString());
     String status = data['status'];
     String pesan = data['message'];
 
@@ -203,30 +204,30 @@ class _Historis_Item_MapState extends State<Historis_Item_Map> {
     });
   }
 
-  formatTanggal(tanggal) {
-    var datestring = tanggal.toString();
-    DateTime parseDate =
-        new DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(datestring);
-    var inputDate = DateTime.parse(parseDate.toString());
-    var outputFormat = DateFormat("d MMMM yyyy", "id_ID");
-    var outputDate = outputFormat.format(inputDate);
-    return outputDate;
-  }
-
-  formatTanggalPickup(tanggal) {
-    var datestring = tanggal.toString();
-    DateTime parseDate =
-        new DateFormat("yyyy-MM-dd' 'HH:mm:ss").parse(datestring);
-    var inputDate = DateTime.parse(parseDate.toString());
-    var outputFormat = DateFormat("d MMMM yyyy", "id_ID");
-    var outputDate = outputFormat.format(inputDate);
-    return outputDate;
-  }
+  // formatTanggal(tanggal) {
+  //   var datestring = tanggal.toString();
+  //   DateTime parseDate =
+  //       new DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(datestring);
+  //   var inputDate = DateTime.parse(parseDate.toString());
+  //   var outputFormat = DateFormat("d MMMM yyyy", "id_ID");
+  //   var outputDate = outputFormat.format(inputDate);
+  //   return outputDate;
+  // }
+  //
+  // formatTanggalPickup(tanggal) {
+  //   var datestring = tanggal.toString();
+  //   DateTime parseDate =
+  //       new DateFormat("yyyy-MM-dd' 'HH:mm:ss").parse(datestring);
+  //   var inputDate = DateTime.parse(parseDate.toString());
+  //   var outputFormat = DateFormat("d MMMM yyyy", "id_ID");
+  //   var outputDate = outputFormat.format(inputDate);
+  //   return outputDate;
+  // }
 
   @override
   Widget build(BuildContext context) {
-    String tanggal_created_order = formatTanggal(widget.created_at);
-    String tanggal_pickup_order = formatTanggalPickup(widget.estimasi);
+    //String tanggal_created_order = formatTanggal(widget.created_at);
+    //String tanggal_pickup_order = formatTanggalPickup(widget.estimasi);
 
     return Center(
       child: Container(
@@ -301,7 +302,7 @@ class _Historis_Item_MapState extends State<Historis_Item_Map> {
                             width: 50,
                           ),
                           Text(
-                            tanggal_created_order,
+                            "${widget.created_at}",
                             style: TextStyle(
                               fontSize: 20,
                               color: Color(0xff70AFE5),
@@ -341,7 +342,7 @@ class _Historis_Item_MapState extends State<Historis_Item_Map> {
                         ),
                       ),
                       Text(
-                        tanggal_pickup_order,
+                        "${widget.estimasi}",
                         style: TextStyle(
                           fontSize: 18,
                           color: Color(0xff002B50),
