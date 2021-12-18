@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:project_jelantah_utama/models/responsePickup.dart';
 import 'package:project_jelantah_utama/screens/dashboard_guest.dart';
 import 'package:project_jelantah_utama/screens/historis_item_selesai.dart';
+import 'package:project_jelantah_utama/screens/history_item_pickup.dart';
 import 'package:project_jelantah_utama/screens/main_history_konfirmasi.dart';
 import 'package:project_jelantah_utama/screens/main_history_proses.dart';
 import 'package:project_jelantah_utama/screens/modal_change_date.dart';
@@ -42,6 +44,9 @@ class _HistorisState extends State<Historis> {
   var _status;
   var _volume;
   var _created_date;
+  var _latitude;
+  var _longitude;
+  var _driverid;
 
   var status;
 
@@ -118,8 +123,12 @@ class _HistorisState extends State<Historis> {
           } else {
             _estimasi.add(_GETestimasi);
           }
+
+          _latitude.add(_data.pickupOrders.data[i].estimateVolume.toString());
+          _longitude.add(_data.pickupOrders.data[i].estimateVolume.toString());
           _volume.add(_data.pickupOrders.data[i].estimateVolume.toString());
           _status.add(_data.pickupOrders.data[i].status.toString());
+          _driverid.add(_data.pickupOrders.data[i].driverId.toString());
 
           String date = _data.pickupOrders.data[i].createdAt.toString();
           var dateTime = DateTime.parse(date);
@@ -226,6 +235,9 @@ class _HistorisState extends State<Historis> {
     _status = [];
     _volume = [];
     _created_date = [];
+    _latitude = [];
+    _longitude = [];
+    _driverid = [];
 
     fetchDataPickupOrder();
   }
@@ -486,7 +498,11 @@ class _HistorisState extends State<Historis> {
             print("idlength: " + _orderid.length.toString());
             print("indexke: " + index.toString());
             if (index == _orderid.length - _nextPageThreshold) {
-              fetchDataPickupOrder();
+              Timer(Duration(milliseconds: 1500), () {
+                if (_hasMore != false) {
+                  fetchDataPickupOrder();
+                }
+              });
             }
             if (index == _orderid.length) {
               if (_error) {
@@ -518,6 +534,9 @@ class _HistorisState extends State<Historis> {
             final estimasi = _estimasi[index];
             final volume = _volume[index];
             final status = _status[index];
+            final latitude = _latitude[index];
+            final longitude = _longitude[index];
+            final driverid = _driverid[index];
             final created_date = _created_date[index];
 
             // return Card(
@@ -553,6 +572,28 @@ class _HistorisState extends State<Historis> {
                     ),
                   );
                 }
+                // CONTAINER SELESAI + METHOD KE DETAIL ITEM SELESAI
+                if (status == 'on_pickup') {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (c, a1, a2) => Historis_Item_Map(
+                        orderid: orderid,
+                        alamat: alamat,
+                        estimasi: estimasi,
+                        volume: volume,
+                        latitude: latitude,
+                        longitude: longitude,
+                        status: status,
+                        driverid: driverid,
+                        created_at: created_date,
+                      ),
+                      transitionsBuilder: (c, anim, a2, child) =>
+                          FadeTransition(opacity: anim, child: child),
+                      transitionDuration: Duration(milliseconds: 300),
+                    ),
+                  );
+                }
                 //CONTAINER BATAL/TOLAK + METHOD ITEM BATAL/TOLAK
                 if (status == 'rejected' ||
                     status == "cancelled" ||
@@ -569,7 +610,6 @@ class _HistorisState extends State<Historis> {
                     ),
                   );
                 }
-
                 // CONTAINER PENDING + METHOD CANCEL
                 if (status == "pending") {
                   showModalBottomSheet(

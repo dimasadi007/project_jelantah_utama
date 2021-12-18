@@ -66,7 +66,6 @@ class _RegisterState extends State<Register> {
       "confirm_password": confirm_password,
       "phone_number": nomor_telepon,
       "level": "contributor",
-      "price": 4000,
       "addresses": [
         {
           "address": alamat,
