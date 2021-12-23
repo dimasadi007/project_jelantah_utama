@@ -207,95 +207,137 @@ class _HistorisProsesState extends State<HistorisProses> {
                       color: Colors.white,
                       child: Row(
                         children: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder: (c, a1, a2) => Historis(),
-                                  transitionsBuilder: (c, anim, a2, child) =>
-                                      FadeTransition(
-                                          opacity: anim, child: child),
-                                  transitionDuration:
-                                      Duration(milliseconds: 300),
+                          Expanded(
+                            flex: 1,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (c, a1, a2) => Historis(),
+                                    transitionsBuilder: (c, anim, a2, child) =>
+                                        FadeTransition(
+                                            opacity: anim, child: child),
+                                    transitionDuration:
+                                        Duration(milliseconds: 300),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "Semua",
+                                style: TextStyle(
+                                  fontSize: 12,
                                 ),
-                              );
-                            },
-                            child: Text("Semua"),
+                              ),
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Color(0xffE7EEF4),
+                                  ),
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ))),
+                            ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder: (c, a1, a2) =>
-                                      HistorisKonfirmasi(),
-                                  transitionsBuilder: (c, anim, a2, child) =>
-                                      FadeTransition(
-                                          opacity: anim, child: child),
-                                  transitionDuration:
-                                      Duration(milliseconds: 300),
+                          Expanded(
+                            flex: 1,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (c, a1, a2) =>
+                                        HistorisKonfirmasi(),
+                                    transitionsBuilder: (c, anim, a2, child) =>
+                                        FadeTransition(
+                                            opacity: anim, child: child),
+                                    transitionDuration:
+                                        Duration(milliseconds: 300),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "Konfirmasi",
+                                style: TextStyle(
+                                  fontSize: 12,
                                 ),
-                              );
-                            },
-                            child: Text("Konfirmasi"),
+                              ),
+                            ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder: (c, a1, a2) => HistorisProses(),
-                                  transitionsBuilder: (c, anim, a2, child) =>
-                                      FadeTransition(
-                                          opacity: anim, child: child),
-                                  transitionDuration:
-                                      Duration(milliseconds: 300),
+                          Expanded(
+                            flex: 1,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (c, a1, a2) =>
+                                        HistorisProses(),
+                                    transitionsBuilder: (c, anim, a2, child) =>
+                                        FadeTransition(
+                                            opacity: anim, child: child),
+                                    transitionDuration:
+                                        Duration(milliseconds: 300),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "Proses",
+                                style: TextStyle(
+                                  fontSize: 12,
                                 ),
-                              );
-                            },
-                            child: Text("Proses"),
-                            style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                  Color(0xffE7EEF4),
-                                ),
-                                shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ))),
+                              ),
+                            ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder: (c, a1, a2) => HistorisSelesai(),
-                                  transitionsBuilder: (c, anim, a2, child) =>
-                                      FadeTransition(
-                                          opacity: anim, child: child),
-                                  transitionDuration:
-                                      Duration(milliseconds: 300),
+                          Expanded(
+                            flex: 1,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (c, a1, a2) =>
+                                        HistorisSelesai(),
+                                    transitionsBuilder: (c, anim, a2, child) =>
+                                        FadeTransition(
+                                            opacity: anim, child: child),
+                                    transitionDuration:
+                                        Duration(milliseconds: 300),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "Selesai",
+                                style: TextStyle(
+                                  fontSize: 12,
                                 ),
-                              );
-                            },
-                            child: Text("Selesai"),
+                              ),
+                            ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder: (c, a1, a2) => HistorisBatal(),
-                                  transitionsBuilder: (c, anim, a2, child) =>
-                                      FadeTransition(
-                                          opacity: anim, child: child),
-                                  transitionDuration:
-                                      Duration(milliseconds: 300),
+                          Expanded(
+                            flex: 1,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (c, a1, a2) => HistorisBatal(),
+                                    transitionsBuilder: (c, anim, a2, child) =>
+                                        FadeTransition(
+                                            opacity: anim, child: child),
+                                    transitionDuration:
+                                        Duration(milliseconds: 300),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "Batal",
+                                style: TextStyle(
+                                  fontSize: 12,
                                 ),
-                              );
-                            },
-                            child: Text("Batal"),
+                              ),
+                            ),
                           ),
                         ],
                       ),

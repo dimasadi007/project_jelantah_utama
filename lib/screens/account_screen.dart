@@ -109,168 +109,137 @@ class _AccountState extends State<Account> {
             color: Color(0xffFDFEFF),
             // width: kIsWeb ? 500.0 : double.infinity,
             child: Scaffold(
-              body: Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(30),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              fit: BoxFit.fitWidth,
-                              image: AssetImage("assets/images/mobil.PNG"),
+              body: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(30),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                fit: BoxFit.fitWidth,
+                                image: AssetImage("assets/images/mobil.PNG"),
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          _first_name + " " + _last_name,
-                          style: TextStyle(
-                            fontSize: 30,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
+                          SizedBox(
+                            height: 5,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                        Text(
-                          _address,
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.blue,
+                          Text(
+                            _first_name + " " + _last_name,
+                            style: TextStyle(
+                              fontSize: 30,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
+                          Text(
+                            _address,
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.blue,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          child: Container(
-                            margin: EdgeInsets.all(10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.vertical(
-                                        top: Radius.circular(10.0)),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Email',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey,
-                                          fontWeight: FontWeight.bold,
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Container(
+                              margin: EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(10.0)),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Email',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        'Ubah',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.blue,
+                                        Text(
+                                          'Ubah',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.blue,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  _email,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.black,
+                                  Text(
+                                    _email,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  'Nomer Telepon',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.bold,
+                                  SizedBox(
+                                    height: 10,
                                   ),
-                                ),
-                                Text(
-                                  _phone_number,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.black,
+                                  Text(
+                                    'Nomer Telepon',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    _phone_number,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
+                          SizedBox(
+                            height: 10,
                           ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.lock_outline,
-                                size: 30.0,
-                                color: Colors.black,
-                              ),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              Text(
-                                'Ubah Kata Sandi',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                      child: Divider(
-                    color: Color(0xffF0F8FF),
-                    thickness: 15,
-                  )),
-                  Container(
-                    padding: EdgeInsets.only(left: 30, right: 30),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, 'change_password_screen');
+                              },
+                              child: Row(
                                 children: [
                                   Icon(
-                                    Icons.settings,
+                                    Icons.lock_outline,
                                     size: 30.0,
                                     color: Colors.black,
                                   ),
@@ -278,7 +247,7 @@ class _AccountState extends State<Account> {
                                     width: 20,
                                   ),
                                   Text(
-                                    'Pengaturan',
+                                    'Ubah Kata Sandi',
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: Colors.black,
@@ -286,10 +255,78 @@ class _AccountState extends State<Account> {
                                   ),
                                 ],
                               ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  RawMaterialButton(
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.account_box_outlined,
+                                  size: 30.0,
+                                  color: Colors.black,
+                                ),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Text(
+                                  'Ubah Data Akun',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                        child: Divider(
+                      color: Color(0xffF0F8FF),
+                      thickness: 15,
+                    )),
+                    Container(
+                      padding: EdgeInsets.only(left: 30, right: 30),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Icon(
+                                    Icons.settings,
+                                    size: 30.0,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Expanded(
+                                  flex: 5,
+                                  child: Text(
+                                    'Pengaturan',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: RawMaterialButton(
                                     onPressed: () {
                                       // Navigator.of(context).push(MaterialPageRoute(
                                       //     builder: (context) =>
@@ -301,35 +338,43 @@ class _AccountState extends State<Account> {
                                       color: Colors.black,
                                     ),
                                     padding: EdgeInsets.only(right: 10.0),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                            child: Divider(
-                          color: Colors.blue,
-                        )),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.card_travel,
-                                    size: 30.0,
-                                    color: Colors.black,
                                   ),
-                                  SizedBox(
-                                    width: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                              child: Divider(
+                            color: Colors.blue,
+                          )),
+                          Container(
+                            padding: EdgeInsets.only(left: 10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                          context, 'tentang_kami_screen');
+                                    },
+                                    child: Icon(
+                                      Icons.card_travel,
+                                      size: 30.0,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                  GestureDetector(
+                                ),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Expanded(
+                                  flex: 5,
+                                  child: GestureDetector(
                                     onTap: () {
                                       Navigator.pushNamed(
                                           context, 'tentang_kami_screen');
@@ -341,13 +386,11 @@ class _AccountState extends State<Account> {
                                         color: Colors.black,
                                       ),
                                     ),
-                                  )
-                                ],
-                              ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  RawMaterialButton(
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: RawMaterialButton(
                                     onPressed: () {
                                       Navigator.pushNamed(
                                           context, 'tentang_kami_screen');
@@ -358,50 +401,56 @@ class _AccountState extends State<Account> {
                                       color: Colors.black,
                                     ),
                                     padding: EdgeInsets.only(right: 10.0),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                            child: Divider(
-                          color: Colors.blue,
-                        )),
-                        GestureDetector(
-                          onTap: () {
-                            showAlertDialog(context);
-                          },
-                          child: Container(
-                            padding: EdgeInsets.only(left: 10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.logout,
-                                  size: 30.0,
-                                  color: Colors.black,
-                                ),
-                                SizedBox(
-                                  width: 20,
-                                ),
-                                Text(
-                                  'Keluar',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.black,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
+                          Container(
+                              child: Divider(
+                            color: Colors.blue,
+                          )),
+                          GestureDetector(
+                            onTap: () {
+                              showAlertDialog(context);
+                            },
+                            child: Container(
+                              padding: EdgeInsets.only(left: 10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: Icon(
+                                      Icons.logout,
+                                      size: 30.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  Expanded(
+                                    flex: 6,
+                                    child: Text(
+                                      'Keluar',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
               bottomNavigationBar: BottomNavigationBar(
                 type: BottomNavigationBarType.fixed,

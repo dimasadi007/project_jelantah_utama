@@ -254,7 +254,7 @@ class _DashboardGuestState extends State<DashboardGuest> {
                                 textAlign: TextAlign.left,
                               ),
                               Text(
-                                "Selamat datang di Jemput Jelantah App",
+                                "Selamat datang, Guest",
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 16,
@@ -267,11 +267,11 @@ class _DashboardGuestState extends State<DashboardGuest> {
                       ),
                     ),
                     Container(
-                      margin: EdgeInsets.fromLTRB(30, 5, 30, 5),
+                      margin: EdgeInsets.fromLTRB(20, 5, 20, 5),
                       child: Divider(color: Colors.grey),
                     ),
                     Container(
-                      margin: EdgeInsets.fromLTRB(30, 5, 30, 5),
+                      margin: EdgeInsets.fromLTRB(20, 5, 20, 5),
                       padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -288,7 +288,7 @@ class _DashboardGuestState extends State<DashboardGuest> {
                                 color: Colors.blue,
                               ),
                               SizedBox(
-                                width: 20,
+                                width: 10,
                               ),
                               Text(
                                 'Login atau Daftar',
@@ -479,8 +479,8 @@ class RC_Video extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 100,
+              height: 100,
               margin: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -491,33 +491,35 @@ class RC_Video extends StatelessWidget {
                 ),
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  tanggal,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    tanggal,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey,
+                    ),
                   ),
-                ),
-                Container(
-                  width: 230,
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: new Text(
-                          judul,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black,
+                  Container(
+                    //width: 140,
+                    child: Row(
+                      children: [
+                        Flexible(
+                          child: new Text(
+                            judul,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black,
+                            ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ],
         ),

@@ -70,21 +70,6 @@ class _Historis_Item_MapState extends State<Historis_Item_Map> {
   DateTime now1 = DateTime.now();
   //var formatter = new DateFormat('dd MMMM yyyy');
 
-  List months = [
-    'jan',
-    'feb',
-    'mar',
-    'apr',
-    'may',
-    'jun',
-    'jul',
-    'aug',
-    'sep',
-    'oct',
-    'nov',
-    'dec'
-  ];
-
   //LatLng _currentPosition = LatLng(-6.168128517426338, 106.79157069327144);
 
   @override

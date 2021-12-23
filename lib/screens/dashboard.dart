@@ -432,17 +432,17 @@ class _DashboardState extends State<Dashboard> {
                         children: [
                           Icon(
                             Icons.event_note,
-                            size: 30.0,
+                            size: 20.0,
                             color: Colors.blue,
                           ),
                           SizedBox(
-                            width: 20,
+                            width: 10,
                           ),
                           TextButton(
                               child: Text(
                                 'Jadwalkan Penjemputan',
                                 style: TextStyle(
-                                  fontSize: 15,
+                                  fontSize: 14,
                                   color: Colors.black,
                                 ),
                               ),
@@ -457,27 +457,24 @@ class _DashboardState extends State<Dashboard> {
                               }),
                         ],
                       ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          RawMaterialButton(
-                            onPressed: () {
-                              if (is_approve == true) {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) =>
-                                        JadwalkanPenjemputan()));
-                              } else {
-                                showAlertDialog(context);
-                              }
-                            },
-                            child: Icon(
-                              Icons.arrow_forward,
-                              size: 30.0,
-                              color: Colors.blue,
-                            ),
-                            padding: EdgeInsets.all(15.0),
-                          )
-                        ],
+                      Expanded(
+                        child: RawMaterialButton(
+                          onPressed: () {
+                            if (is_approve == true) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) =>
+                                      JadwalkanPenjemputan()));
+                            } else {
+                              showAlertDialog(context);
+                            }
+                          },
+                          child: Icon(
+                            Icons.arrow_forward,
+                            size: 30.0,
+                            color: Colors.blue,
+                          ),
+                          padding: EdgeInsets.all(0.0),
+                        ),
                       ),
                     ],
                   ),
@@ -668,8 +665,8 @@ class RC_Video extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 100,
+              height: 100,
               margin: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -680,33 +677,35 @@ class RC_Video extends StatelessWidget {
                 ),
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  tanggal,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    tanggal,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey,
+                    ),
                   ),
-                ),
-                Container(
-                  width: 230,
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: new Text(
-                          judul,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black,
+                  Container(
+                    width: 230,
+                    child: Row(
+                      children: [
+                        Flexible(
+                          child: new Text(
+                            judul,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black,
+                            ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ],
         ),

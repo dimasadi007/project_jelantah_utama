@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:project_jelantah_utama/screens/account_screen.dart';
+import 'package:project_jelantah_utama/screens/change_password_screen.dart';
 import 'package:project_jelantah_utama/screens/login_screen.dart';
 import 'package:project_jelantah_utama/screens/registration_screen.dart';
 import 'package:project_jelantah_utama/screens/tentang_kami_screen.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         'login_screen': (context) => LoginPage(),
         'registration_screen': (context) => Register(),
         'tentang_kami_screen': (context) => TentangKamiScreen(),
+        'change_password_screen': (context) => ChangePassword(),
         //...
         //...
         //'main_history': (context) => MainHistory(),
