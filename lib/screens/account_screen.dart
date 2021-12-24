@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:http/http.dart' as http;
 
+import 'change_accountdata_screen.dart';
 import 'chat_admin.dart';
 import 'dashboard_guest.dart';
 import 'main_history_semua.dart';
@@ -260,30 +261,48 @@ class _AccountState extends State<Account> {
                           SizedBox(
                             height: 10,
                           ),
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.account_box_outlined,
-                                  size: 30.0,
-                                  color: Colors.black,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (c, a1, a2) => ChangeAccountdata(
+                                      firstname: _first_name,
+                                      lastname: _last_name,
+                                      phonenumber: _phone_number),
+                                  transitionsBuilder: (c, anim, a2, child) =>
+                                      FadeTransition(
+                                          opacity: anim, child: child),
+                                  transitionDuration:
+                                      Duration(milliseconds: 300),
                                 ),
-                                SizedBox(
-                                  width: 20,
-                                ),
-                                Text(
-                                  'Ubah Data Akun',
-                                  style: TextStyle(
-                                    fontSize: 20,
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.account_box_outlined,
+                                    size: 30.0,
                                     color: Colors.black,
                                   ),
-                                ),
-                              ],
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  Text(
+                                    'Ubah Data Akun',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],

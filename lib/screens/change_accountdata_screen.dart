@@ -10,16 +10,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dashboard_guest.dart';
 
-class ChangePassword extends StatefulWidget {
+class ChangeAccountdata extends StatefulWidget {
+  final String firstname, lastname, phonenumber;
+
+  ChangeAccountdata({
+    required String this.firstname,
+    required String this.lastname,
+    required String this.phonenumber,
+  });
   @override
-  _ChangePasswordState createState() => _ChangePasswordState();
+  _ChangeAccountdataState createState() => _ChangeAccountdataState();
 }
 
 enum LoginStatusAccountScreen { notSignIn, signIn }
 
-class _ChangePasswordState extends State<ChangePassword> {
+class _ChangeAccountdataState extends State<ChangeAccountdata> {
   LoginStatusAccountScreen _loginStatus = LoginStatusAccountScreen.notSignIn;
-  late String email, password, confirm_password, nama;
+  //late String password, confirm_password, nama;
   var _token, status;
   final _key = new GlobalKey<FormState>();
   final TextEditingController _pass = TextEditingController();
@@ -27,6 +34,7 @@ class _ChangePasswordState extends State<ChangePassword> {
   final _Controller = TextEditingController();
   final focusNode = FocusNode();
   var confirmPass;
+  var inputfirstname, inputlastname, inputphonenumber;
 
   bool _secureText = true;
 
@@ -65,8 +73,9 @@ class _ChangePasswordState extends State<ChangePassword> {
     _token = preferences.getString("token");
     Map bodi = {
       "token": _token,
-      "password": password,
-      "confirm_password": confirm_password,
+      "first_name": inputfirstname,
+      "last_name": inputlastname,
+      "phone_number": inputphonenumber,
     };
     var body = jsonEncode(bodi);
     final response = await http.post(
@@ -99,7 +108,7 @@ class _ChangePasswordState extends State<ChangePassword> {
     Map bodi = {"token": _token};
     var body = json.encode(bodi);
     final response = await http.post(
-      Uri.parse("http://10.0.2.2:8000/api/contributor/session/delete"),
+      Uri.parse("http://10.0.2.2:8000/api/contributor/user/put"),
       body: body,
     );
     final data = jsonDecode(response.body);
@@ -179,63 +188,72 @@ class _ChangePasswordState extends State<ChangePassword> {
                                   children: <Widget>[
                                     SizedBox(height: 10),
                                     Text(
-                                      'Password Baru',
+                                      'Nama Depan',
                                       style:
                                           TextStyle(color: Color(0xff283c71)),
                                     ),
                                     TextFormField(
-                                      controller: _pass,
+                                      initialValue: widget.firstname,
                                       style:
                                           TextStyle(color: Color(0xff283c71)),
-                                      obscureText: _secureText,
-                                      onSaved: (e) => password = e!,
-                                      decoration: InputDecoration(
-                                        hintText: "Masukan Password Baru",
-                                        suffixIcon: IconButton(
-                                          onPressed: showHide,
-                                          icon: Icon(_secureText
-                                              ? Icons.visibility_off
-                                              : Icons.visibility),
-                                        ),
-                                      ),
                                       validator: (e) {
-                                        confirmPass = e;
                                         if (e!.isEmpty) {
-                                          return "Masukan Password Baru";
+                                          return "Masukan Nama Depan";
                                         }
                                       },
+                                      onSaved: (e) => inputfirstname = e!,
+                                      decoration: InputDecoration(
+                                        hintText: "Masukan Nama Depan",
+                                      ),
                                     ),
                                     SizedBox(height: 10),
                                     Text(
-                                      'Konfirmasi Password Baru',
+                                      'Nama Belakang',
                                       style:
                                           TextStyle(color: Color(0xff283c71)),
                                     ),
                                     TextFormField(
-                                      controller: _confirmPass,
+                                      initialValue: widget.lastname,
                                       style:
                                           TextStyle(color: Color(0xff283c71)),
-                                      obscureText: _secureText,
-                                      onSaved: (e) => confirm_password = e!,
-                                      decoration: InputDecoration(
-                                        hintText:
-                                            "Masukan Konfirmasi Password Baru",
-                                        suffixIcon: IconButton(
-                                          onPressed: showHide,
-                                          icon: Icon(_secureText
-                                              ? Icons.visibility_off
-                                              : Icons.visibility),
-                                        ),
-                                      ),
                                       validator: (e) {
                                         if (e!.isEmpty) {
-                                          return "Masukan Konfirmasi Password Baru";
-                                        }
-                                        if (e! != confirmPass) {
-                                          return 'Password Berbeda';
+                                          return "Masukan Nama Belakang";
                                         }
                                       },
+                                      onSaved: (e) => inputlastname = e!,
+                                      decoration: InputDecoration(
+                                        hintText: "Masukan Nama Belakang",
+                                      ),
                                     ),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      'Nomor Telepon',
+                                      style:
+                                          TextStyle(color: Color(0xff283c71)),
+                                    ),
+                                    TextFormField(
+                                      initialValue: widget.phonenumber,
+                                      //controller: _controller,
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: <TextInputFormatter>[
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp(r'[0-9]')),
+                                      ],
+                                      style:
+                                          TextStyle(color: Color(0xff283c71)),
+                                      validator: (e) {
+                                        if (e!.isEmpty) {
+                                          return "Masukan Nomor Telepon";
+                                        }
+                                      },
+                                      onSaved: (e) => inputphonenumber = e!,
+                                      decoration: InputDecoration(
+                                        hintText:
+                                            "Masukan Nomor Telepon (cth: 08123456789)",
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
                                     SizedBox(height: 25),
                                     Container(
                                       height: 50,
@@ -246,10 +264,10 @@ class _ChangePasswordState extends State<ChangePassword> {
                                       child: TextButton(
                                           onPressed: () {
                                             //checkAndSave();
-                                            showAlertDialogChangePassword(
+                                            showAlertDialogChangeAccountdata(
                                                 context);
                                           },
-                                          child: Text('Ubah Password',
+                                          child: Text('Ubah Data Akun',
                                               style: TextStyle(
                                                   color: Colors.white))),
                                     ),
@@ -272,7 +290,7 @@ class _ChangePasswordState extends State<ChangePassword> {
     }
   }
 
-  void showAlertDialogChangePassword(BuildContext context) {
+  void showAlertDialogChangeAccountdata(BuildContext context) {
     // set up the buttons
     Widget cancelButton = TextButton(
       child: Text("Tidak"),
@@ -289,9 +307,8 @@ class _ChangePasswordState extends State<ChangePassword> {
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Ubah Sandi"),
-      content: Text("     Apakah anda ingin mengubah kata sandi?"
-          "\n\n     Akun anda akan otomatis logout setelah penggantian sandi berhasil dilakukan!"),
+      title: Text("Ubah Data Akun"),
+      content: Text("Apakah anda ingin mengubah data akun anda?"),
       actions: [
         cancelButton,
         continueButton,
