@@ -170,7 +170,7 @@ class _HistorisSelesaiState extends State<HistorisSelesai> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: EdgeInsets.fromLTRB(30, 5, 30, 5),
+                      padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
                       color: Colors.white,
                       child: Row(
                         children: [
@@ -196,15 +196,6 @@ class _HistorisSelesaiState extends State<HistorisSelesai> {
                                   fontSize: 12,
                                 ),
                               ),
-                              style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
-                                    Color(0xffE7EEF4),
-                                  ),
-                                  shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ))),
                             ),
                           ),
                           Expanded(
@@ -280,6 +271,15 @@ class _HistorisSelesaiState extends State<HistorisSelesai> {
                                   fontSize: 12,
                                 ),
                               ),
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Color(0xffE7EEF4),
+                                  ),
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ))),
                             ),
                           ),
                           Expanded(
