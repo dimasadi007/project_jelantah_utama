@@ -171,7 +171,7 @@ class _Historis_Item_SelesaiState extends State<Historis_Item_Selesai> {
                 ),
               ),
               title: Text(
-                "Order Selesai ID " + widget.orderid,
+                "Order Selesai",
                 style: TextStyle(
                   color: Colors.blue, // 3
                 ),
@@ -304,7 +304,7 @@ class _Historis_Item_SelesaiState extends State<Historis_Item_Selesai> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Estimasi Volume Awal',
+                                  'Est. Volume Awal',
                                   style: TextStyle(
                                     fontSize: 10,
                                     color: Colors.grey,
@@ -325,7 +325,7 @@ class _Historis_Item_SelesaiState extends State<Historis_Item_Selesai> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Total Volume Tertimbang',
+                                  'Volume Tertimbang',
                                   style: TextStyle(
                                     fontSize: 10,
                                     color: Colors.grey,
@@ -392,23 +392,6 @@ class _Historis_Item_SelesaiState extends State<Historis_Item_Selesai> {
                                 ),
                               ],
                             ),
-                            if (status == 'closed')
-                              TextButton(
-                                onPressed: () {},
-                                child: Text(
-                                  "Selesai",
-                                  style: TextStyle(color: Colors.green),
-                                ),
-                                style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                      Color(0xffECF8ED),
-                                    ),
-                                    shape: MaterialStateProperty.all<
-                                            RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ))),
-                              ),
                           ],
                         ),
                         SizedBox(

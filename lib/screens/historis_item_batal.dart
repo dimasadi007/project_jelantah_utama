@@ -177,7 +177,7 @@ class _Historis_Item_BatalState extends State<Historis_Item_Batal> {
                 ),
               ),
               title: Text(
-                "Order Selesai ID " + widget.orderid,
+                "Order Batal",
                 style: TextStyle(
                   color: Colors.blue, // 3
                 ),
@@ -310,7 +310,7 @@ class _Historis_Item_BatalState extends State<Historis_Item_Batal> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Estimasi Volume Awal',
+                                  'Est. Volume Awal',
                                   style: TextStyle(
                                     fontSize: 10,
                                     color: Colors.grey,
@@ -331,7 +331,7 @@ class _Historis_Item_BatalState extends State<Historis_Item_Batal> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Total Volume Tertimbang',
+                                  'Volume Tertimbang',
                                   style: TextStyle(
                                     fontSize: 10,
                                     color: Colors.grey,
