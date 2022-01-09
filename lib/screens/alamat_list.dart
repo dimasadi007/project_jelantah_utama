@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:project_jelantah_utama/models/responseAlamatList.dart';
+import 'package:project_jelantah_utama/screens/detail_alamat_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
@@ -30,7 +31,14 @@ class AlamatList extends StatefulWidget {
 
 class _AlamatListState extends State<AlamatList> {
   var _orderid;
-  var _alamat, _nomor_telpon, _recipient_name, _kode_pos;
+  var _id,
+      _alamat,
+      _nomor_telpon,
+      _recipient_name,
+      _kode_pos,
+      _city_id,
+      _lat,
+      _lng;
   var _estimasi;
   var _status;
   var _volume;
@@ -83,10 +91,14 @@ class _AlamatListState extends State<AlamatList> {
         //print("pagenumber:" + _pageNumber.toString());
 
         for (int i = 0; i < _data.addresses.length; i++) {
+          _id.add(_data.addresses[i].id.toString());
           _alamat.add(_data.addresses[i].address.toString());
           _kode_pos.add(_data.addresses[i].postalCode.toString());
           _nomor_telpon.add(_data.addresses[i].phoneNumber.toString());
           _recipient_name.add(_data.addresses[i].recipientName.toString());
+          _city_id.add(_data.addresses[i].cityId.toString());
+          _lat.add(_data.addresses[i].latitude.toString());
+          _lng.add(_data.addresses[i].longitude.toString());
           // var _GETestimasi = _data.pickupOrders.data[i].pickupDate;
           // if (_GETestimasi == null) {
           //   _estimasi.add("-");
@@ -135,6 +147,10 @@ class _AlamatListState extends State<AlamatList> {
     _kode_pos = [];
     _recipient_name = [];
     _nomor_telpon = [];
+    _city_id = [];
+    _lat = [];
+    _lng = [];
+    _id = [];
 
     fetchDataAlamatList();
   }
@@ -309,6 +325,10 @@ class _AlamatListState extends State<AlamatList> {
             //final Photo photo = _photos[index];
             final recipient_name = _recipient_name[index];
             final alamat = _alamat[index];
+            final id = _id[index];
+            final lat = _lat[index];
+            final lng = _lng[index];
+            final city_id = _city_id[index];
             final kode_pos = _kode_pos[index];
             final nomor_telpon = _nomor_telpon[index];
             // final status = _status[index];
@@ -337,7 +357,15 @@ class _AlamatListState extends State<AlamatList> {
                 Navigator.push(
                   context,
                   PageRouteBuilder(
-                    pageBuilder: (c, a1, a2) => AlamatList(),
+                    pageBuilder: (c, a1, a2) => DetailAlamat(
+                        id: id,
+                        alamat: alamat,
+                        city_id: city_id,
+                        kode_pos: kode_pos,
+                        recipient_name: recipient_name,
+                        nomor_telpon: nomor_telpon,
+                        lat: lat,
+                        lng: lng),
                     transitionsBuilder: (c, anim, a2, child) =>
                         FadeTransition(opacity: anim, child: child),
                     transitionDuration: Duration(milliseconds: 300),
