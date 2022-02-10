@@ -8,6 +8,8 @@ import 'package:project_jelantah_utama/models/responseUserCity.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'alamat_list.dart';
+
 class DetailAlamat extends StatefulWidget {
   final String alamat,
       kode_pos,
@@ -112,6 +114,15 @@ class _DetailAlamatState extends State<DetailAlamat> {
       setState(() {
         Navigator.pop(context);
       });
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (c, a1, a2) => AlamatList(),
+          transitionsBuilder: (c, anim, a2, child) =>
+              FadeTransition(opacity: anim, child: child),
+          transitionDuration: Duration(milliseconds: 300),
+        ),
+      );
     } else {
       print(pesan);
     }
@@ -147,7 +158,7 @@ class _DetailAlamatState extends State<DetailAlamat> {
           color: Color.fromRGBO(0, 43, 80, 1), //change your color here
         ),
         title: Text(
-          "Daftar",
+          "Detail Alamat",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Color.fromRGBO(0, 43, 80, 1),
@@ -332,7 +343,107 @@ class _DetailAlamatState extends State<DetailAlamat> {
                                   ),
                                   child: TextButton(
                                       onPressed: () {
-                                        checkAndSave();
+                                        showModalBottomSheet(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.only(
+                                                  topLeft: Radius.circular(45),
+                                                  topRight:
+                                                      Radius.circular(45)),
+                                            ),
+                                            backgroundColor: Colors.white,
+                                            context: context,
+                                            builder: (context) {
+                                              return Container(
+                                                padding: EdgeInsets.all(30),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Column(
+                                                      //crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Container(
+                                                              width: 50,
+                                                              child: Divider(
+                                                                color:
+                                                                    Colors.blue,
+                                                                thickness: 5,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          height: 15,
+                                                        ),
+                                                        Container(
+                                                          child: Divider(
+                                                              color:
+                                                                  Colors.blue),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 15,
+                                                        ),
+                                                        Center(
+                                                          child: Text(
+                                                            'Apa anda yakin ingin menyimpan perubahannya?',
+                                                            style: TextStyle(
+                                                              fontSize: 20,
+                                                              color:
+                                                                  Colors.black,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .stretch,
+                                                      children: [
+                                                        Container(
+                                                          height: 50,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color:
+                                                                Color.fromRGBO(
+                                                                    231,
+                                                                    238,
+                                                                    244,
+                                                                    1),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10),
+                                                          ),
+                                                          child: TextButton(
+                                                              onPressed: () {
+                                                                showAlertDialog_ubahAlamat(
+                                                                    context);
+                                                              },
+                                                              child: Text(
+                                                                  'Simpan',
+                                                                  style: TextStyle(
+                                                                      color: Color.fromRGBO(
+                                                                          18,
+                                                                          88,
+                                                                          148,
+                                                                          1)))),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                              );
+                                            });
                                       },
                                       child: Text('Simpan',
                                           style:
@@ -370,6 +481,40 @@ class _DetailAlamatState extends State<DetailAlamat> {
           Text("Pilih KOTA dengan meng-klik dari pilihan-pilihan yang ada!"),
       actions: [
         cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  void showAlertDialog_ubahAlamat(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Tidak"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Ya"),
+      onPressed: () {
+        checkAndSave();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Simpan perubahan"),
+      content: Text("Yakin?"),
+      actions: [
+        cancelButton,
+        continueButton,
       ],
     );
 
